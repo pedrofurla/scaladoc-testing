@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="Scala Variables" basedir=".">
-    <property name="SCALA_HOME_28" value="C:\dev\langs\scala\scala-svn\my-nightly\latest"/>
-    <property name="SCALA_SRC" value="C:\dev\langs\scala\scala-svn\scala"/>
-    <property name="PROJECT_LOC" value="C:\dev\langs\scala\projects\ScalaDoc2"/>
+	<property name="SCALA_BASE" value="C:\java\lang"/>
+    <property name="SCALA_HOME_28" value="${SCALA_BASE}\scala-svn\my-nightly\latest"/>
+    <property name="SCALA_SRC" value="${SCALA_BASE}\scala-svn\scala"/>
+    <property name="PROJECT_LOC" value="${SCALA_BASE}\scala-experiments\ScalaDoc2"/>
     <property name="scala.home" value="${SCALA_HOME_28}"/>
-    <property name="tmp" value="C:\dev\langs\scala\projects\tmp\scaladoc2"/>
+    <property name="tmp" value="${PROJECT_LOC}\..\tmp\scaladoc2"/>
     <echo>
         scala.home: ${SCALA_HOME_28}
         SCALA_HOME_28: ${SCALA_HOME_28}

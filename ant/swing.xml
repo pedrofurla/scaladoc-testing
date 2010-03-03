@@ -5,7 +5,7 @@
     <target name="scaladoc-swing" >
     	<scaladoc srcdir="${SCALA_SRC}/src/" sourcepath="${SCALA_SRC}/src/"
             docsourceurl="http://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src"
-    		destdir="${tmp}/doc-compiler"    		
+    		destdir="${tmp}/doc-swing"    		
     		classpathref="scala.classpath">
     		<include name="library/scala/math/**/*.scala"/>
     		<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>

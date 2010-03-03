@@ -4,7 +4,6 @@
         <include name="test/**/*.scala"/>
     </fileset>
     <echo>${files}</echo>
-	<sleep seconds="5"/>
     <!--  docsourceurl="file:///C:/dev/langs/scala/projects/src" -->
     <target name="scaladoc-testing">
         <scaladoc srcdir="." sourcepath="test"  docsourceurl="file:///C:/dev/langs/scala/projects/src"
