@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="scala.application">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/ScalaDoc/src/scala/tools/nsc/ScalaDoc.scala"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="scala.tools.nsc.ScalaDoc"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-d ${resource_loc:/ScalaDoc2}\doc-compiler -sourcepath   ${SCALA_SRC}\src\compiler"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ScalaDoc2"/>
+</launchConfiguration>

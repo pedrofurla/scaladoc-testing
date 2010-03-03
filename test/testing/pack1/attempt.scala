@@ -1,0 +1,4 @@
+/**
+ * some doc
+ */
+package attempt

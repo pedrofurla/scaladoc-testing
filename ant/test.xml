@@ -1,0 +1,16 @@
+<project name="scalaDoc2-test" default="scaladoc-testing">
+    <import file="local-config.xml"/>
+    <fileset id="files" >
+        <include name="test/**/*.scala"/>
+    </fileset>
+    <echo>${files}</echo>
+	<sleep seconds="5"/>
+    <!--  docsourceurl="file:///C:/dev/langs/scala/projects/src" -->
+    <target name="scaladoc-testing">
+        <scaladoc srcdir="." sourcepath="test"  docsourceurl="file:///C:/dev/langs/scala/projects/src"
+                  destdir="${tmp}/doc-testing"
+                  classpathref="scala.classpath">
+            <include name="test/**/*.scala"/>
+        </scaladoc>
+    </target>
+</project>

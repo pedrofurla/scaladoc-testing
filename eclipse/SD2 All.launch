@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="scala.application">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/scaladoc-testing"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="scala.tools.nsc.ScalaDoc"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-d ${resource_loc:/ScalaDoc2}\..\tmp\scaladoc2\doc-testing   -doc-source-url file:///C:/dev/langs/scala/projects/ScalaDoc2/test -sourcepath test test/testing/pack1/foo.scala test/testing/pack1/packageph.scala test/testing/pack1/packObj.scala test/testing/pack2/foo.scala test/testing/TestDoc.scala test/nestedpacks.scala test/multiplepackobjects.scala"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="scaladoc-testing"/>
+</launchConfiguration>

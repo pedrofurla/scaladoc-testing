@@ -1,0 +1,16 @@
+<project name="scalaDoc2-swing" default="scaladoc-swing">
+    <import file="local-config.xml"/>
+
+
+    <target name="scaladoc-swing" >
+    	<scaladoc srcdir="${SCALA_SRC}/src/" sourcepath="${SCALA_SRC}/src/"
+            docsourceurl="http://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src"
+    		destdir="${tmp}/doc-compiler"    		
+    		classpathref="scala.classpath">
+    		<include name="library/scala/math/**/*.scala"/>
+    		<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
+    		<exclude name="**/*.xml"/>
+    		<exclude name="**/*.tmpl"/>
+    	</scaladoc>
+    </target>
+</project>
