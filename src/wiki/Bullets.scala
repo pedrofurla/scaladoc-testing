@@ -34,7 +34,7 @@ object Bullets extends Wiki {
 		}
 	}
 	
-	override lazy val samples:List[String] = 		
+	override val samples:List[String] = 		
 		wrongMixing :: //c11 :: c1 :: c2 :: c10 ::
 		//" * LIST1 " :: 
 		//" * LIST1 \n * LIST2 " ::
