@@ -53,7 +53,7 @@ class MyDocFactory(reporter: Reporter, settings: doc.Settings) extends doc.DocFa
 	import doc._
 	var modelFactory:model.ModelFactory = _
 	var htmlFactory:html.HtmlFactory = _
-	var docModel:model.Package = _
+	var universe:Universe = _
 
 	def testFindMember = {
 	  // expected NONE
@@ -75,7 +75,7 @@ class MyDocFactory(reporter: Reporter, settings: doc.Settings) extends doc.DocFa
     compiler.addSourceless
     if (!reporter.hasErrors) {
       modelFactory = (new model.ModelFactory(compiler, settings))      
-      docModel = modelFactory.makeModel
+      universe = modelFactory.makeModel
       
       testFindMember
       

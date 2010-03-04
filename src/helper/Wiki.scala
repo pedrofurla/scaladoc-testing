@@ -8,7 +8,7 @@ import scala.tools.nsc.doc.model.comment._
 abstract class Wiki {
 	val settings = new scala.tools.nsc.Settings();
 	val reporter = new ConsoleReporter(settings);
-	val factory= new CommentFactory(reporter)
+	val factory= new CommentFactory(reporter, null)
 	val eot = factory.endOfText
 	val page = new html.HtmlPage {
 		def path = Nil
