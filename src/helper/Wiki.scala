@@ -9,16 +9,16 @@ abstract class Wiki extends DocFactoryMock {
 	//val settings = new scala.tools.nsc.Settings();
 	//val reporter = new ConsoleReporter(settings);
 	
-	override val files = 
-		"scalaDoc2Root/../tmp/scaladoc2/doc-testing" :: 
-		"scalaDoc2Root/test/testing/TestDoc.scala" ::
-		"scalaDoc2Root/test/testing/ParentDoc.scala" ::
+	override val files =  
+		"test/testing/TestDoc.scala" ::
+		"test/testing/ParentDoc.scala" ::
 		Nil
 	
-	override val outputLocation = "scalaDoc2Root/../tmp/scaladoc2/doc-testing"
+	override val outputLocation = "../tmp/scaladoc2/doc-testing"
 		
-	val factory= new CommentFactory(reporter, null)
-	val eot = factory.endOfText
+	var factory:CommentFactory = _ //= new CommentFactory(reporter, null)
+	val eot = '\u0003'
+	val samples:List[String]
 	
 	val page = new html.HtmlPage {
 		def path = Nil
@@ -28,7 +28,7 @@ abstract class Wiki extends DocFactoryMock {
 	}		
 	
 	def runSample(text:String):Body = {
-		println(text.replaceAll("\n","\\\\n"));
+		println("Sample: "+text.replaceAll("\n","\\\\n"));
 		factory.parseWiki(text, null)
 	}
 	def runSamples = {		
@@ -37,13 +37,13 @@ abstract class Wiki extends DocFactoryMock {
 		}
 	}
 	
-	def main(args:Array[String]) = {
-		runSamples		
+	override def testWith(modelFactory:model.ModelFactory, universe:Universe):Unit = {
+		factory = new CommentFactory(reporter, modelFactory)
+		runSamples
+		//println(modelFactory.templatesCache) 
+		exit(0)
 	}
-		
-	val samples:List[String] 
-
- 
+	
 }
 
 	

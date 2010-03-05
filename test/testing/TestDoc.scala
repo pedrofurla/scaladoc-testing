@@ -7,6 +7,9 @@ package testing
 /** 
 * Teste de docs class TestDoc
 * 
+*    - SPC 
+*    - SPC2
+* 
 *  - T1
 *  - T2
 *   - T2.1

@@ -84,4 +84,8 @@ abstract class DocFactoryMock extends doc.DocFactory(DocFactoryMock.reporter, Do
 		}
 	}
 	
+	def main(args:Array[String]) = {
+		run		
+	}
+	
 }

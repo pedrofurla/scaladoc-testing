@@ -14,9 +14,12 @@ object Links extends Wiki {
 		"[[ ]]" ::
 		"[[  ]]" ::
 		"[[   ]]" ::
+		"[[http://...]]" ::
 		"[[http://... Titulo]]" ::
 		"[[scala.String]]" ::
 		"[[http://www.google.com some where]]" ::
+		"[[http://www.google.com ''some where'']]" ::
+		"[[testing.TestDoc]]" ::
 		Nil	
 		
  
