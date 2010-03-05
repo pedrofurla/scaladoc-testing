@@ -7,6 +7,6 @@
 <listEntry value="4"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="scala.tools.nsc.ScalaDoc"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-d ${resource_loc:/ScalaDoc2}\..\tmp\scaladoc2\doc-testing  ${resource_loc:/scaladoc-testing}\test\testing\TestDoc.scala ${resource_loc:/scaladoc-testing}\test\testing\ParentDoc.scala"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-doc-version 1.5.x -doc-title &quot;Silly classes to test scaladoc&quot; -d ${resource_loc:/ScalaDoc2}\..\tmp\scaladoc2\doc-testing  ${resource_loc:/scaladoc-testing}\test\testing\TestDoc.scala ${resource_loc:/scaladoc-testing}\test\testing\ParentDoc.scala"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="scaladoc-testing"/>
 </launchConfiguration>

@@ -78,7 +78,7 @@ Doc val d
 	* @see ParentDoc
 	* @see TestDoc
 	*/
-	def method:this.type = this
+	implicit def method:this.type = this
 	
 	def other(start:Int=1) = new TestDoc(p2 = "A")
 	

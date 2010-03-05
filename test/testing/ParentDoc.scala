@@ -23,6 +23,9 @@ class ParentDoc(x:Int)(implicit p1:String, p2: Int) {
 	 * Parent method
 	 */
 	def parentMethod = 0
-val a = 1
-  def this(nonSense:String) = this(1)("",5)
+	val a = 1
+	implicit val iPval = 5
+	implicit var iPvar = 5
+	implicit def iPdef = 5
+	def this(nonSense:String) = this(1)("",5)
 }
