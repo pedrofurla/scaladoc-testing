@@ -76,7 +76,7 @@ abstract class DocFactoryMock extends doc.DocFactory(DocFactoryMock.reporter, Do
 			
 			testWith(modelFactory,universe);
 			
-			htmlFactory = (new html.HtmlFactory(reporter, settings))      
+			htmlFactory = (new html.HtmlFactory(universe))      
 			
 			testWith(modelFactory,universe,htmlFactory)
 			

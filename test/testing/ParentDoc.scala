@@ -21,6 +21,7 @@ package testing
 class ParentDoc(x:Int)(implicit p1:String, p2: Int) {
 	/**
 	 * Parent method
+	 * @usecase def aaa
 	 */
 	def parentMethod = 0
 	val a = 1

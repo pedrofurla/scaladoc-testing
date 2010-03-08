@@ -77,6 +77,7 @@ Doc val d
 	* @author ''fulano2''
 	* @see ParentDoc
 	* @see TestDoc
+	* @usecase def blah:this.type
 	*/
 	implicit def method:this.type = this
 	
