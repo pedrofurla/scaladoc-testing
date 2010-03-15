@@ -87,11 +87,6 @@ object Bullets extends Wiki {
 	|
 	|    - L2.1""".stripMargin
 		
-		
-	
-
-	
- 
 }
 
 	

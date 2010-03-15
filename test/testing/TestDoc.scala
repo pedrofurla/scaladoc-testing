@@ -37,7 +37,7 @@ package testing
 * @see [[testing.ParentDoc the parent]]
 * @see [[testing.TestDoc]]
 */
-final class TestDoc(val p2:String="AAA", val p3:Int=5, var p4:Double = 1.0) extends ParentDoc(1)(p2,1) {
+class TestDoc(val p2:String="AAA", val p3:Int=5, var p4:Double = 1.0) extends ParentDoc(1)(p2,1) {
 	
 	override val a = 1
 	
@@ -96,6 +96,7 @@ Doc val d
 	 * Simple 
 	 * @deprecated Taglet depre. msg
 	 * @author alalal
+	 * @usecase def anotherBBB
 	 */
 	def anotherMethod = 0;
 
@@ -108,7 +109,8 @@ Doc val d
 * Teste de docs obj TestDoc
 * @author Pedro
 * @deprecated use TestDoc
-*/object TestDoc {
+*/
+object TestDoc extends TestDoc {
 	/** Constroi...
 	 * @return um TestDoc
 	 * @deprecated Taglet Deprecated 
