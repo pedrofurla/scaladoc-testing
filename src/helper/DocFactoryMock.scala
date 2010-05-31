@@ -49,7 +49,7 @@ abstract class DocFactoryMock extends doc.DocFactory(DocFactoryMock.reporter, Do
 
 	def run: Unit = {
 		val fakeArgs = ( "-d" :: outputLocation :: files ).toArray
-		val command = new CompilerCommand(fakeArgs.toList, settings, error, false)
+		val command = new CompilerCommand(fakeArgs.toList, settings)
 		/*val fakeArgs = Array(
 			"-d", "scalaDoc2Root/../tmp/scaladoc2/doc-testing", 
 			"scalaDoc2Root/test/testing/TestDoc.scala", 
@@ -68,7 +68,7 @@ abstract class DocFactoryMock extends doc.DocFactory(DocFactoryMock.reporter, Do
 		(new compiler.Run()) compile files
 		compiler.addSourceless
 		if (!reporter.hasErrors) {
-			modelFactory = (new model.ModelFactory(compiler, settings))
+			modelFactory = (new model.ModelFactory(compiler, settings) with CommentFactory)
 			
 			testWith(modelFactory);
 			

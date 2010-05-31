@@ -4,6 +4,7 @@ import scala.tools.nsc.reporters._
 import scala.tools.nsc.util._
 import scala.tools.nsc.doc._
 import scala.tools.nsc.doc.model.comment._
+import scala.tools.nsc.doc.model._
 
 abstract class Wiki extends DocFactoryMock {
 	//val settings = new scala.tools.nsc.Settings();
@@ -38,7 +39,7 @@ abstract class Wiki extends DocFactoryMock {
 	}
 	
 	override def testWith(modelFactory:model.ModelFactory, universe:Universe):Unit = {
-		factory = new CommentFactory(reporter, modelFactory)
+		factory = new ModelFactory(compiler, settings) with CommentFactory
 		runSamples
 		//println(modelFactory.templatesCache) 
 		exit(0)

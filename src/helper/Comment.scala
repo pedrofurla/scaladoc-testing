@@ -4,10 +4,14 @@ import scala.tools.nsc.reporters._
 import scala.tools.nsc.util._
 import scala.tools.nsc.doc._
 import scala.tools.nsc.doc.model.comment._
+import scala.tools.nsc.doc.model._
+
+class MockModelFactory(global: scala.tools.nsc.Global, settings: Settings) extends ModelFactory(global,settings) { 
+	thisFactory: MockModelFactory with CommentFactory =>
+	def parsePublic(comment: String, pos: Position): Comment = thisFactory.parse(comment,pos)
+}
 
 abstract class CommentTest extends DocFactoryMock {
-	//val settings = new scala.tools.nsc.Settings();
-	//val reporter = new ConsoleReporter(settings);
 	
 	override val files =  
 		"test/testing/TestDoc.scala" ::
@@ -16,7 +20,7 @@ abstract class CommentTest extends DocFactoryMock {
 	
 	override val outputLocation = "../tmp/scaladoc2/doc-testing"
 		
-	var factory:CommentFactory = _ //= new CommentFactory(reporter, null)
+	var factory : MockModelFactory with CommentFactory 	= _
 	val eot = '\u0003'
 	val samples:List[String]
 	
@@ -29,7 +33,7 @@ abstract class CommentTest extends DocFactoryMock {
 	
 	def runSample(text:String):Comment = {
 		println("Sample: "+text.replaceAll("\n","\\\\n"));
-		factory.parse(text, null)
+		factory.parsePublic(text, null)
 	}
 	def runSamples = {		
 		for(text <- samples) {			
@@ -38,8 +42,8 @@ abstract class CommentTest extends DocFactoryMock {
 	}
 	
 	override def testWith(modelFactory:model.ModelFactory, universe:Universe):Unit = {
-		factory = new CommentFactory(reporter, modelFactory)
-		runSamples
+		factory = new MockModelFactory(compiler, settings) with CommentFactory
+		//runSamples
 		//println(modelFactory.templatesCache) 
 		exit(0)
 	}
