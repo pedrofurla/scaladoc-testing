@@ -102,6 +102,10 @@ Doc val d
 
   def implTest(x:Int)(implicit p:List[String],z:Int) = p
   def implTest2(implicit p:List[String]) = p
+  
+  val valAbsString:String = ""
+  var varAbsString:String = ""
+  def defAbsMethod:String = ""
 	
 }
 
