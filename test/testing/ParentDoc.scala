@@ -2,7 +2,7 @@ package testing
 
 import scala.collection.Seq
 import scala.collection.mutable.ArrayStack
-abstract class AbstractParentDoc[F[A] <: Seq[F[A]] ] {	
+abstract class AbstractParentDoc[F[A,B] <: Seq[F[A,B]] ] {	
 	
 	type absType
 	type crtType = String
