@@ -56,6 +56,6 @@ abstract class ParentDoc(x:Int)(implicit p1:String, p2: Int) extends AbstractPar
 		*/
 	implicit def iPdef = 5
 	def this(nonSense:String) = this(1)("",5)
-	def typeBounds[F[_],Seq[A] >: F[A] <: ArrayStack[A] ]:Unit = {}
+	def typeBounds[A,F[_],Seq[A] >: F[A] <: ArrayStack[A] ](x:F[A]):Unit = {}
 	
 }
