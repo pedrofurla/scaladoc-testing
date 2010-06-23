@@ -3,8 +3,6 @@ package testing
 import scala.collection.Seq
 import scala.collection.mutable.ArrayStack
 
-
-
 /** 
  * Testing a abstract class with ''type parameters''
  *  - With some ''type parameters''
@@ -40,6 +38,13 @@ abstract class AbstractParentDoc[A[Z],X,B[X]] { self =>
 /**
  Testing ''wiki'' parsing.
  
+A paragraph starting in the first column. Followed by a list
+
+- List with no left whitespace
+- Another Item
+ 
+ This doccomment has no '*' in the begin of lines.
+ 
  Parent class ''with italics?'', '''bold''', a super classe
  
  A link in a new paragraph [[testing.AbstractParentDoc]]
@@ -55,7 +60,7 @@ abstract class AbstractParentDoc[A[Z],X,B[X]] { self =>
     - HIJ
       - Some link [[testing.AbstractParentDoc]]
  
- = TIT 1 = AAA
+ = TIT 1 = AAA <- this disappers
  == TIT 2 ==
  === TIT 3 ===
  */

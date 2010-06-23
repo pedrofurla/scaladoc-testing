@@ -5,11 +5,12 @@
 package testing
 
 /** 
-* Teste de docs class TestDoc
+* This class contains some tests for
 * 
-*    - SPC 
-*    - SPC2
+* 1. Default values
+* 1. Use case
 * 
+* Some mixing of list styles
 *  - T1
 *  - T2
 *   - T2.1
@@ -21,9 +22,9 @@ package testing
 *   - T2.2
 *  - T3
 * 
-* Some time, [[http://www.google.com some where]]
+* Naming a link: [[http://www.google.com some where]]
 * 
-* I was [[http://www.google.com]]-ing
+* No names: [[http://www.google.com]]-ing
 * 
 * {{{
 * 	some code here
@@ -34,10 +35,10 @@ package testing
 * @since   1.0
 * @author Pedro
 * @author ''fulano''
-* @see [[testing.ParentDoc the parent]]
+* @see This should emit a warning [[testing.ParentDoc the parent]]
 * @see [[testing.TestDoc]]
 */
-class TestDoc(val p2:String="AAA", val p3:Int=5, var p4:Double = 1.0) extends ParentDoc(1)(p2,1) {
+class TestDoc(val p2:String="AAA", val p3:Int=5, var p4:Double = 1.0, var aList:List[Int]= 1 :: 2 :: 3 :: Nil) extends ParentDoc(1)(p2,1) {
 	
 	override val a = 1
 	
