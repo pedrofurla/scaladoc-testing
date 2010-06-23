@@ -127,4 +127,11 @@ object TestDoc extends TestDoc {
 
 }
 
+/**
+ * A super ultra mega lower class in the hiearchy just to test subclassing ordering
+ */
+class Alpha extends TestDoc {
+	
+}
+
 
