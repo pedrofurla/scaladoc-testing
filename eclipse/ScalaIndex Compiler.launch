@@ -13,6 +13,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="scala.tools.nsc.ScalaIndex"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-d ${resource_loc:/ScalaDoc2}\..\tmp\doc-compiler -sourcepath   ${SCALA_SRC}\src\compiler"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-d ${resource_loc:/ScalaDoc2}\..\tmp\scaladoc2\doc-compiler -sourcepath   ${SCALA_SRC}\src\compiler"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="scaladoc-testing"/>
 </launchConfiguration>

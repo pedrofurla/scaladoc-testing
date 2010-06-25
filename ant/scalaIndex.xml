@@ -1,17 +1,17 @@
 <project name="scalaIndex2-scala" default="scaladoc-library-list">
 	<import file="local-config.xml"/>
-	<target name="scaladoc-library-list">
-		<scaladoc srcdir="${SCALA_SRC}/src/" destdir="${tmp}/doc-library" 
+	<target name="scalaIndex-library-list">
+		<scalaIndex srcdir="${SCALA_SRC}/src/" destdir="${tmp}/doc-library" 
 			classpathref="scala.classpath">
 			<include name="library/scala/collection/immutable/*.scala" />
 			<include name="library/scala/collection/*.scala" />
 			<exclude name="scala\tools\nsc\doc\html\resource\lib\**" />
 			<exclude name="**/*.xml" />
 			<exclude name="**/*.tmpl" />
-		</scaladoc>
+		</scalaIndex>
 	</target>
 
-	<target name="scaladoc-library-shallow">
+	<target name="scalaIndex-library-shallow">
 		<scalaIndex srcdir="${SCALA_SRC}/src/"
     		destdir="${tmp}/doc-library"
     		classpathref="scala.classpath">
@@ -21,7 +21,8 @@
 			<exclude name="**/*.tmpl"/>
 		</scalaIndex>
 	</target>
-	<target name="scaladoc-library" >
+  
+	<target name="scalaIndex-library" >
 		<scalaIndex srcdir="${SCALA_SRC}/src/" 
     		destdir="${tmp}/doc-library"
     		classpathref="scala.classpath">
@@ -31,5 +32,16 @@
 			<exclude name="**/*.tmpl"/>
 		</scalaIndex>
 	</target>
+
+  <target name="scalaIndex-swing">
+    <scalaIndex srcdir="${SCALA_SRC}/src/"
+        destdir="${tmp}/doc-library"
+        classpathref="scala.classpath">
+      <include name="swing/**/*.scala"/>
+      <exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
+      <exclude name="**/*.xml"/>
+      <exclude name="**/*.tmpl"/>
+    </scalaIndex>
+  </target>
 
 </project>

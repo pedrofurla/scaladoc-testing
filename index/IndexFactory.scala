@@ -44,17 +44,33 @@ class IndexFactory(val reporter: Reporter, val settings: doc.Settings) { process
       def packView(packages:List[model.Package], tab:Int = 0) {    	
     	for(pack <- packages sortBy(_.name)) {
     	  // +" "+pack.isDocTemplate
-    	  println((" " * tab) + "[]" + pack.qualifiedName)
+    	  println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
+    	  
     	  templateView(pack, pack.templates, tab+2)
     	  packView(pack.packages,tab+2)
     	}
       }
       def templateView(owner:model.DocTemplateEntity, templates:List[model.DocTemplateEntity], tab:Int = 0) {
-    	for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.head == owner) {
+    	//if(t.inDefinitionTemplates.size==0) println("EMPTY: "+t) 
+    	for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
     	  // + " = " + t.inTemplate.name +" "+t.isDocTemplate+" "+" inTemplate " + t.inDefinitionTemplates)
-    	  println((" " * tab) + "TPL " + t.name);
+    	  println((" " * tab) + nature2string(t) + " " + t.name);
+    	  typeView(t, t.aliasTypes, tab+2)
     	  templateView(t, t.templates, tab+2)
     	}
+      }
+      
+      def typeView(owner:model.DocTemplateEntity, types:List[model.AliasType], tab:Int = 0) {
+    	for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {    	  
+    	  println((" " * tab) +  " type " + t.name);    	  
+    	}
+      }
+      import model._
+      def nature2string(e : model.TemplateEntity) = {    	  
+    	  if(e.isTrait) "trait" else
+    	  if(e.isObject) "object" else
+    	  if(e.isPackage) "package" else
+    	  if(e.isClass) "class" else ""
       }
       
       packView(docModel.rootPackage.packages)
