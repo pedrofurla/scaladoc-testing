@@ -13,10 +13,12 @@
         SCALA_SRC: ${SCALA_SRC}
         PROJECT_LOC: ${PROJECT_LOC}
     </echo>
-
+	<taskdef name="scalaIndex"
+	             classname="scala.tools.ant.ScalaIndexTask" classpathref="scala.classpath"/>
     <path id="scala.classpath">
       <pathelement path="bin"/>
       <pathelement path="${PROJECT_LOC}/bin"/>
+      <pathelement path="${PROJECT_LOC}/../scala-testing/bin"/>
       <pathelement location="${SCALA_HOME_28}/lib/scala-library.jar"/>
       <pathelement location="${SCALA_HOME_28}/lib/scala-compiler.jar"/>
       <pathelement location="${SCALA_HOME_28}/lib/scala-partest.jar"/>
