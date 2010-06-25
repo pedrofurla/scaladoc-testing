@@ -129,9 +129,15 @@ object TestDoc extends TestDoc {
 }
 
 /**
- * A super ultra mega lower class in the hiearchy just to test subclassing ordering
+ * A super ultra mega class in lower hiearchy just to test subclassing ordering
+ * 
+ * Also testing templates nesting
  */
 class Alpha extends TestDoc {
+
+	class CrtAbsInnerClass extends AbsInnerClass {
+		type SomeType = String
+	}
 	
 }
 
