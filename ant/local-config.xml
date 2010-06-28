@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="Scala Variables" basedir=".">
-	<!--<property name="SCALA_BASE" value="C:/dev/langs/scala"/>
+	<property name="SCALA_BASE" value="C:/dev/langs/scala"/>
     <property name="SCALA_HOME_28" value="${SCALA_BASE}/scala-2.8.0"/>
     <property name="SCALA_SRC" value="${SCALA_BASE}/scala-svn/scala"/>
     <property name="PROJECT_LOC" value="${SCALA_BASE}/projects/ScalaDoc2"/>
-    <property name="scala.home" value="${SCALA_HOME_28}"/>-->
+    <property name="scala.home" value="${SCALA_HOME_28}"/>
     <property name="tmp" value="${PROJECT_LOC}/../tmp/scaladoc2"/>
     <echo>
         scala.home: ${SCALA_HOME_28}
@@ -15,14 +15,15 @@
     </echo>
     <path id="scala.classpath">
 <!--      <pathelement path="bin"/>-->
+      <pathelement location="${SCALA_HOME_28}/lib/scala-library.jar"/>
       <pathelement path="${PROJECT_LOC}/bin"/>
       <pathelement path="${PROJECT_LOC}/../scaladoc-testing/bin"/>
       <pathelement path="${PROJECT_LOC}/../scaladoc-testing/ant"/>
-      <pathelement location="${SCALA_HOME_28}/lib/scala-library.jar"/>
+      <!-- <pathelement location="${SCALA_HOME_28}/lib/scala-swing.jar"/> -->
       <pathelement location="${SCALA_HOME_28}/lib/scala-compiler.jar"/>
-      <!--<pathelement location="${SCALA_HOME_28}/lib/scala-partest.jar"/>
+      <pathelement location="${SCALA_HOME_28}/lib/scala-partest.jar"/>
       <pathelement location="${SCALA_HOME_28}/lib/scalap.jar"/>
-      <pathelement location="${SCALA_HOME_28}/lib/jline.jar"/>-->
+      <pathelement location="${SCALA_HOME_28}/lib/jline.jar"/>
     </path>
     
     <taskdef resource="antlib.xml" classpathref="scala.classpath"/>

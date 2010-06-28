@@ -58,7 +58,7 @@ object ScalaIndex {
         if (docSettings.target.value == "msil")
           msilLibPath foreach (x => docSettings.assemrefs.value += (pathSeparator + x))
         
-        val docProcessor = new scala.tools.nsc.doc.IndexFactory(reporter, docSettings)
+        val docProcessor = new scala.tools.nsc.doc.TempFactory(reporter, docSettings)
         docProcessor.document(command.files)
         
       }

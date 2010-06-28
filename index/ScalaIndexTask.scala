@@ -529,7 +529,7 @@ class ScalaIndexTask extends MatchingTask {
     val Pair(docSettings, sourceFiles) = initialize
     val reporter = new ConsoleReporter(docSettings)
     try {
-      val docProcessor = new scala.tools.nsc.doc.IndexFactory(reporter, docSettings)
+      val docProcessor = new scala.tools.nsc.doc.TempFactory(reporter, docSettings)
       docProcessor.document(sourceFiles.map (_.toString))
       if (reporter.ERROR.count > 0)
         error(

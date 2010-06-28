@@ -1,7 +1,8 @@
-<project name="scalaIndex2-scala" default="scaladoc-library-list">
+<project name="scalaIndex2-scala" default="scalaIndex-swing">
 	<import file="local-config.xml"/>
-	<target name="scalaIndex-library-list">
-		<scalaIndex srcdir="${SCALA_SRC}/src/" destdir="${tmp}/doc-library" 
+	<target name="scalaIndex-library-shallow">
+		<scalaIndex srcdir="${SCALA_SRC}/src/" 
+			destdir="${tmp}/doc-index" 
 			classpathref="scala.classpath">
 			<include name="library/scala/collection/immutable/*.scala" />
 			<include name="library/scala/collection/*.scala" />
@@ -11,9 +12,9 @@
 		</scalaIndex>
 	</target>
 
-	<target name="scalaIndex-library-shallow">
+	<target name="scalaIndex-library-collection">
 		<scalaIndex srcdir="${SCALA_SRC}/src/"
-    		destdir="${tmp}/doc-library"
+    		destdir="${tmp}/doc-index"
     		classpathref="scala.classpath">
 			<include name="library/scala/collection/**/*.scala"/>
 			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
@@ -24,7 +25,7 @@
   
 	<target name="scalaIndex-library" >
 		<scalaIndex srcdir="${SCALA_SRC}/src/" 
-    		destdir="${tmp}/doc-library"
+    		destdir="${tmp}/doc-index"
     		classpathref="scala.classpath">
 			<include name="library/**/*.scala"/>
 			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
@@ -33,15 +34,23 @@
 		</scalaIndex>
 	</target>
 
-  <target name="scalaIndex-swing">
-    <scalaIndex srcdir="${SCALA_SRC}/src/"
-        destdir="${tmp}/doc-library"
-        classpathref="scala.classpath">
-      <include name="swing/**/*.scala"/>
-      <exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
-      <exclude name="**/*.xml"/>
-      <exclude name="**/*.tmpl"/>
-    </scalaIndex>
-  </target>
-
+	<target name="scalaIndex-swing">
+	  <scalaIndex srcdir="${SCALA_SRC}/src/"
+	      destdir="${tmp}/doc-index"
+	      classpathref="scala.classpath">
+	    <include name="swing/**/*.scala"/>
+	    <exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
+	    <exclude name="**/*.xml"/>
+	    <exclude name="**/*.tmpl"/>
+	  </scalaIndex>
+	</target>
+  
+	<target name="scalaIndex-testing">
+		<scalaIndex srcdir="${PROJECT_LOC}/../scaladoc-testing"
+			sourcepath="${PROJECT_LOC}/../scaladoc-testing" 
+			docsourceurl="file:///C:/dev/langs/scala/projects/src"
+			destdir="${tmp}/doc-index" classpathref="scala.classpath">
+			<include name="test/**/*.scala" />
+		</scalaIndex>
+	</target>
 </project>
