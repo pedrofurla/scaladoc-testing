@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="Scala Variables" basedir=".">
-	<property name="SCALA_BASE" value="C:/dev/langs/scala"/>
+	  <property name="SCALA_BASE" value="C:/dev/langs/scala"/>
     <property name="SCALA_HOME_28" value="${SCALA_BASE}/scala-2.8.0"/>
     <property name="SCALA_SRC" value="${SCALA_BASE}/scala-svn/scala"/>
     <property name="PROJECT_LOC" value="${SCALA_BASE}/projects/ScalaDoc2"/>
@@ -11,7 +11,8 @@
         scala.home: ${SCALA_HOME_28}
         SCALA_HOME_28: ${SCALA_HOME_28}
         SCALA_SRC: ${SCALA_SRC}
-        PROJECT_LOC: ${PROJECT_LOC}
+        PROJECT_LOC: ${PROJECT_LOC}        
+        tmp: ${tmp}
     </echo>
     <path id="scala.classpath">
 <!--      <pathelement path="bin"/>-->

@@ -48,7 +48,6 @@
 	<target name="scalaIndex-testing">
 		<scalaIndex srcdir="${PROJECT_LOC}/../scaladoc-testing"
 			sourcepath="${PROJECT_LOC}/../scaladoc-testing" 
-			docsourceurl="file:///C:/dev/langs/scala/projects/src"
 			destdir="${tmp}/doc-index" classpathref="scala.classpath">
 			<include name="test/**/*.scala" />
 		</scalaIndex>

@@ -13,7 +13,7 @@ import model._
 import scala.collection._
 import scala.xml._
 
-class LetterIndex(letter:Char, members:Set[model.MemberEntity], universe:Universe) extends HtmlPage {
+class LetterIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, universe:Universe) extends HtmlPage {
   
   def path = List("index-"+letter+".html","index")
 
@@ -30,21 +30,38 @@ class LetterIndex(letter:Char, members:Set[model.MemberEntity], universe:Univers
       <script type="text/javascript" src={ relativeLinkTo{List("scheduler.js", "lib")} }></script>
       <script type="text/javascript" src={ relativeLinkTo{List("index.js", "lib")} }></script>
     </xml:group>
-    def nature2string(e : model.TemplateEntity) = {    	  
-    	  if(e.isTrait) "t " else
-    	  if(e.isObject) "o " else
-    	  if(e.isPackage) "p " else
-    	  if(e.isClass) "c " else ""
+    def nature2string(e : model.Entity) = 
+    	e match {
+    	  case t : model.TemplateEntity if(t.isTrait) => "t "
+    	  case t : model.TemplateEntity if(t.isObject) => "o "
+    	  case t : model.TemplateEntity if(t.isPackage) => "p "
+    	  case t : model.TemplateEntity if(t.isClass) => "c " 
+    	  case e : model.MemberEntity if(e.isDef) => "d "
+    	  case e : model.MemberEntity if(e.isVal) => "vl "
+    	  case e : model.MemberEntity if(e.isVar) => "vr "
+    	  case e : model.MemberEntity if(e.isAliasType) => "tp "
+    	  case a : model.AbstractType => "atp "
+
       }
+  val groupedMembers = indexModel(letter).groupBy({_.name})  
+  def indexLinks = 
+	  <div>
+  		{ for(letter <- indexModel.keySet) yield { // TODO Sorting
+  		  val ch = if(letter=='#') "%23" else letter // url encoding if needed  
+  		  <a href={"index-"+ch+".html"}>{letter}</a> ++ xml.Text(" | ") 	
+  		} }
+      </div>
+  
   def body =
     <body>
-      { for(groups <- members.groupBy({_.name})) yield {
+      { indexLinks }
+      { for(groups <- groupedMembers) yield {
     	<div class="name">
-    		Name: { groups._1 }
-    		into: <div class="ocurances">
+    		{ groups._1 }: 
+    		 <div class="ocurances">
     		{ for(member <- groups._2) yield {
     			val owner = member.inDefinitionTemplates.head
-    			templateToHtml(owner) ++ xml.Text(" ")
+    			templateToHtml(owner) ++ xml.Text(" as "+nature2string(member))
     		} } 
     		</div>
     	</div>

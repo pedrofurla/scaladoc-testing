@@ -35,7 +35,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
 	  
     override def generate:Unit = {
       for(letter <- indexModel) {
-    	 new html.page.LetterIndex(letter._1,letter._2, universe) writeFor this
+    	 new html.page.LetterIndex(letter._1,indexModel, universe) writeFor this
       }
     }
   }
@@ -71,6 +71,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	  println((" " * tab) + nature2string(t) + " " + t.name);
     	  index.addDoc(t)
     	  typeView(t, t.aliasTypes, tab+2)
+    	  typeView(t, t.abstractTypes, tab+2)
     	  templateView(t, t.templates, tab+2)
     	  nonTemplateView(t, t.methods,tab+2)
     	  nonTemplateView(t, t.values,tab+2)
@@ -87,7 +88,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	if(!filtered.isEmpty) println()
       }
       
-      def typeView(owner:model.DocTemplateEntity, types:List[model.AliasType], tab:Int = 0) = {
+      def typeView(owner:model.DocTemplateEntity, types:List[model.NonTemplateMemberEntity], tab:Int = 0) = {
     	for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {    	  
     	  println((" " * tab) +  " type " + t.name);
     	  index.addDoc(t)
