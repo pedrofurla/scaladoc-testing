@@ -38,10 +38,13 @@ class LetterIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, universe:U
     	  case t : model.TemplateEntity if(t.isClass) => "c " 
     	  case e : model.MemberEntity if(e.isDef) => "d "
     	  case e : model.MemberEntity if(e.isVal) => "vl "
+    	  case e : model.MemberEntity if(e.isLazyVal) => "lvl "
     	  case e : model.MemberEntity if(e.isVar) => "vr "
     	  case e : model.MemberEntity if(e.isAliasType) => "tp "
     	  case a : model.AbstractType => "atp "
-
+    	  case u @ _ => { 
+    	 	  println("unknown "+ u+ " " +u.getClass); u.toString 
+    	   }
       }
   val groupedMembers = indexModel(letter).groupBy({_.name})  
   def indexLinks = 

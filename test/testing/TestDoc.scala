@@ -141,4 +141,6 @@ class Alpha extends TestDoc {
 	
 }
 
-
+/** Some class to test indexing which references AnyRef
+*/
+class AnyRefUse(a:AnyRef) extends AnyRef
