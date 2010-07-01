@@ -1,13 +1,12 @@
 /* NSC -- new Scala compiler -- Copyright 2007-2010 LAMP/EPFL */
 
-
 package scala.tools.nsc
 package doc
 
 import reporters.Reporter
 
 /** Copied from scala.tools.nsc.doc.DocFactory
-  * TODO Rename or put the important part somewhere it makes sense
+  * TODO Rename or put the important part somewhere that make sense
   */
 class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processor =>
 
@@ -35,7 +34,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
 	  
     override def generate:Unit = {
       for(letter <- indexModel) {
-    	 new html.page.LetterIndex(letter._1,indexModel, universe) writeFor this
+    	 new html.page.ReferenceIndex(letter._1,indexModel, universe) writeFor this
       }
     }
   }

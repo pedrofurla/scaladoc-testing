@@ -20,46 +20,8 @@ import scala.tools.nsc.Global
 import scala.tools.nsc.doc.Settings
 import scala.tools.nsc.reporters.{Reporter, ConsoleReporter}
 
-/** <p>
- *    An Ant task to document Scala code.
- *  </p>
- *  <p>
- *    This task can take the following parameters as attributes:
- *  </p>
- *  <ul>
- *    <li>srcdir (mandatory),</li>
- *    <li>srcref,</li>
- *    <li>destdir,</li>
- *    <li>classpath,</li>
- *    <li>classpathref,</li>
- *    <li>sourcepath,</li>
- *    <li>sourcepathref,</li>
- *    <li>bootclasspath,</li>
- *    <li>bootclasspathref,</li>
- *    <li>extdirs,</li>
- *    <li>extdirsref,</li>
- *    <li>encoding,</li>
- *    <li>doctitle,</li>
- *    <li>header,</li>
- *    <li>footer,</li>
- *    <li>top,</li>
- *    <li>bottom,</li>
- *    <li>addparams,</li>
- *    <li>deprecation,</li>
- *    <li>unchecked.</li>
- *  </ul>
- *  <p>
- *    It also takes the following parameters as nested elements:
- *  </p>
- *  <ul>
- *    <li>src (for srcdir),</li>
- *    <li>classpath,</li>
- *    <li>sourcepath,</li>
- *    <li>bootclasspath,</li>
- *    <li>extdirs.</li>
- *  </ul>
- *
- *  @author Gilles Dubochet, Stephane Micheloud
+/** 
+ *Copied from scala.tools.ant.Scaladoc
  */
 class ScalaIndexTask extends MatchingTask {
 
