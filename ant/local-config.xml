@@ -19,7 +19,6 @@
       <pathelement location="${SCALA_HOME_28}/lib/scala-library.jar"/>
       <pathelement path="${PROJECT_LOC}/bin"/>
       <pathelement path="${PROJECT_LOC}/../scaladoc-testing/bin"/>
-      <pathelement path="${PROJECT_LOC}/../scaladoc-testing/ant"/>
       <!-- <pathelement location="${SCALA_HOME_28}/lib/scala-swing.jar"/> -->
       <pathelement location="${SCALA_HOME_28}/lib/scala-compiler.jar"/>
       <pathelement location="${SCALA_HOME_28}/lib/scala-partest.jar"/>
@@ -27,6 +26,6 @@
       <pathelement location="${SCALA_HOME_28}/lib/jline.jar"/>
     </path>
     
-    <taskdef resource="antlib.xml" classpathref="scala.classpath"/>
+    <taskdef resource="antlib-index.xml" classpathref="scala.classpath"/>
     <taskdef resource="scala/tools/ant/antlib.xml" classpathref="scala.classpath"/>
 </project>

@@ -29,10 +29,28 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
   }
   import scala.collection.mutable._
   type IndexModel = HashMap[Char, Set[model.MemberEntity]]
+  type IndexModel2 = HashMap[Char, collection.immutable.SortedSet[model.MemberEntity]]
   
   class IndexFactory(universe:Universe, indexModel:IndexModel) extends html.HtmlFactory(universe) {
-	  
+	import io.{ Streamable, Directory }
+	
+	/**
+	 * Borrowed from HtmlFactory generateMethod
+	 */
+	def copyResource(subPath: String) {
+      val bytes = new Streamable.Bytes {
+        val inputStream = getClass.getResourceAsStream("/scala/tools/nsc/doc/html/resource/" + subPath)
+        assert(inputStream != null)
+      }.toByteArray
+      val dest = Directory(siteRoot) / subPath
+      dest.parent.createDirectory()
+      val out = dest.toFile.bufferedOutput()
+      try out.write(bytes, 0, bytes.length)
+      finally out.close()
+    }  
+	
     override def generate:Unit = {
+      copyResource("lib/refIndex.css")
       for(letter <- indexModel) {
     	 new html.page.ReferenceIndex(letter._1,indexModel, universe) writeFor this
       }
@@ -42,6 +60,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
   def indexModel(universe:Universe)={
 	  
       val index = new IndexModel()
+      
       
 	  class MapHelper[D <: model.MemberEntity](m:HashMap[Char, Set[D]]) {
     	def addDoc(d:D) = {
@@ -54,13 +73,24 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
       }
       
       implicit def mapHelper[D <: model.MemberEntity](m:HashMap[Char, Set[D]]) = new MapHelper(m)
-    	  
+      /*implicit val ordering = new math.Ordering[model.Entity] {
+    	  def compare(x:model.Entity, y:model.Entity) = math.Ordering
+      }*/
+      implicit val ordering:math.Ordering[model.Entity] = math.Ordering.String.on{ x:model.Entity => x.name }
+      val index2 = new IndexModel()
+      
       def packView(packages:List[model.Package], tab:Int = 0):Unit = {
     	for(pack <- packages sortBy(_.name)) {
     	  // +" "+pack.isDocTemplate
-    	  println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)    	  
+    	  println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
     	  templateView(pack, pack.templates, tab+2)
     	  packView(pack.packages,tab+2)
+    	  
+    	  nonTemplateView(pack, pack.methods,tab+2)
+    	  nonTemplateView(pack, pack.values,tab+2)
+    	  
+    	  typeView(pack, pack.aliasTypes, tab+2)
+    	  typeView(pack, pack.abstractTypes, tab+2)
     	}
       }
       def templateView(owner:model.DocTemplateEntity, templates:List[model.DocTemplateEntity], tab:Int = 0):Unit = {
@@ -79,12 +109,12 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
       
       def nonTemplateView(owner:model.DocTemplateEntity, nonTemplates:List[model.NonTemplateMemberEntity], tab:Int) = {
     	val filtered = nonTemplates.filter( _.inDefinitionTemplates.head == owner )
-    	if(!filtered.isEmpty) print(" " * tab)
+    	//if(!filtered.isEmpty) print(" " * tab)
         for(member <- nonTemplates) {
-        	print(member.name+", ")
+        	//print(member.name+", ")
         	index.addDoc(member)
         }
-    	if(!filtered.isEmpty) println()
+    	//if(!filtered.isEmpty) println()
       }
       
       def typeView(owner:model.DocTemplateEntity, types:List[model.NonTemplateMemberEntity], tab:Int = 0) = {
@@ -101,7 +131,43 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	  if(e.isClass) "class" else ""
       }
       
-      packView(universe.rootPackage.packages)
+      //packView(universe.rootPackage.packages)
+      
+      def gather(owner:DocTemplateEntity, templates:List[DocTemplateEntity], tab:Int = 0):Unit = {
+    	def gather0(owner:DocTemplateEntity, members:List[MemberEntity], tab:Int=0):Unit = {
+    		for(m <- members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {
+    			m match {
+    				case tpl:DocTemplateEntity => {
+    					//println((" " * tab) + nature2string(tpl) + " " + tpl.name)
+    					index.addDoc(tpl)
+    					gather0(tpl, tpl.members,tab+2)
+    				}
+    				case alias:AliasType =>
+    				 // println((" " * tab) + " type " + alias.name)
+    				  index.addDoc(alias)
+    				case absType:AbstractType =>
+    				  index.addDoc(absType)
+    				 // println((" " * tab) + " type " + absType.name) 
+    				case non:NonTemplateMemberEntity if !non.isConstructor => index.addDoc(non)
+    				case _ => println("Something wrong with: " + m.qualifiedName + " -> "+m.getClass)
+    			}
+    		}
+    	}
+        for(t <- templates if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
+            println((" " * tab) + nature2string(t) + " " + t.name)
+            gather0(t,t.members,tab+2)
+        }
+      }
+      
+      gather(universe.rootPackage, universe.rootPackage.packages)
+      
+      for(entry <- index) {
+    	  println("i1. " + entry._1 + " - "+entry._2.size)
+      }
+      for(entry <- index2) {
+    	  println("i2. " + entry._1 + " - "+entry._2.size)
+      }
+      
       index
   }
   
@@ -109,6 +175,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     * previous calls to the same processor.
     * @param files The list of paths (relative to the compiler's source path, or absolute) of files to document. */
   def document(files: List[String]): Unit = {
+	
     (new compiler.Run()) compile files
     compiler.addSourceless
     assert(settings.docformat.value == "html")

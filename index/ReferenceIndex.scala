@@ -47,7 +47,7 @@ class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, univers
   val groupedMembers = indexModel(letter).groupBy({_.name})  
   def indexLinks = 
 	  <div class="letters">
-  		{ for(l <- indexModel.keySet.toList.sortBy( _.toString )) yield { // TODO This line is extremelly stupidy
+  		{ for(l <- indexModel.keySet.toList.sortBy( _.toString )) yield { // TODO This line is extremelly stupid
   		  val ch = if(l=='#') "%23" else l // url encoding if needed
   		  ( if(letter != l) 
   		 	  <span><a href={"index-"+ch+".html"}>{l.toUpper}</a></span> 
@@ -63,7 +63,7 @@ class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, univers
     	<div class="entry">
     		<div class="name">{ groups._1 }</div> 
     		<div class="occurrences">
-    		  { for(member <- groups._2) yield {
+    		  { for(member <- groups._2) yield { 
     			  val owner = member.inDefinitionTemplates.head
     			  <span>{xml.Text(nature2string(member)+" in ")}</span> ++ 
     			    templateToHtml(owner) ++ xml.Text(" ")
