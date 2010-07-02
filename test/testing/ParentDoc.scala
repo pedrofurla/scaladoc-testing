@@ -33,6 +33,8 @@ abstract class AbstractParentDoc[A[Z],X,B[X]] { self =>
 	val valAbsString:String
 	var varAbsString:String
 	def defAbsMethod:String
+	
+	def toString:String
 }
 
 /**
@@ -103,7 +105,9 @@ abstract class ParentDoc[Z[X],T,G[Y]](x:Int)(implicit p1:String, p2: Int) extend
 		def defAbsMethod:String = ""
 		
 		/** Here comes the interesting part */
-		def defUnaccessible = "";
-		
+		def defUnaccessible = ""
+		override def toString = ""		
 	}
+	
+	override def toString = ""
 }

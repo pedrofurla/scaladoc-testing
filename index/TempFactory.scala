@@ -29,7 +29,10 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     }
   }
   // TODO Found that IndexModel has to use a Set, otherwise overloaded methods get repeated.
-  type IndexModel = mutable.HashMap[Char, mutable.ListBuffer[model.MemberEntity]]
+  type IndexModel = mutable.HashMap[Char, SortedSet[model.MemberEntity]] // apparently sortedset is keeping only one element
+  
+  // HashMap[Name's First Letter, HashMap[Name, SortedSet[Owner Template]]
+  type IndexModel2 = mutable.HashMap[Char, mutable.HashMap[String,SortedSet[model.TemplateEntity]]]
   
   class IndexFactory(universe:Universe, indexModel:IndexModel) extends html.HtmlFactory(universe) {
 	import io.{ Streamable, Directory }
@@ -59,20 +62,31 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
   
   def indexModel(universe:Universe)={
       import model._
-      
-	  class MapHelper(m:IndexModel) {
+            
+      val index = new IndexModel2()      
+	  
+      class MapHelper(m:IndexModel2) {
+    	implicit def ordering = math.Ordering.String.on { x:TemplateEntity => x.name.toLowerCase }
+    	
     	def addDoc(d:MemberEntity) = {
     		val firstLetter = { 
     			val ch = d.name.head.toLower
     			if(ch.isLetterOrDigit) ch else '#'
     		}
-    	 	m(firstLetter) = if(m.contains(firstLetter)) m(firstLetter) + d else mutable.ListBuffer(d)
+    		if(m.contains(firstLetter)) {
+    			m(firstLetter)(d.name) = 
+    				if(m(firstLetter).contains(d.name)) 
+    					m(firstLetter)(d.name) + d.inDefinitionTemplates.head 
+    				else SortedSet(d.inDefinitionTemplates.head)
+    		} else {
+    			m(firstLetter)..$init$.
+    		}
+    	 	
     	  }  
       }
-      
-      implicit def mapHelper[D <: MemberEntity](m:IndexModel) = new MapHelper(m)      
-      val index = new IndexModel()
-      
+            
+      implicit def mapHelper(m:IndexModel2) = new MapHelper(m)
+                 
       //@scala.annotation.tailrec // TODO
 	  def gather(owner:DocTemplateEntity, members:List[MemberEntity]):Unit =
 		for(m <- members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {

@@ -107,7 +107,15 @@ Doc val d
   val valAbsString:String = ""
   var varAbsString:String = ""
   def defAbsMethod:String = ""
-	
+	  
+  /**
+   * To test overloaded methods in the indexing process
+   */
+  def toDoSomething = ""
+  def toDoSomething(x:Int) = ""
+  def toDoSomething(x:String) = ""
+    
+  override def toString = ""
 }
 
 /** 
@@ -125,6 +133,7 @@ object TestDoc extends TestDoc {
   def main = {
     //new TestDoc()
   }
+  override def toString = ""
 
 }
 
@@ -139,8 +148,12 @@ class Alpha extends TestDoc {
 		type SomeType = String
 	}
 	
+	override def toString = ""
+	
 }
 
 /** Some class to test indexing which references AnyRef
 */
-class AnyRefUse(a:AnyRef) extends AnyRef
+class AnyRefUse(a:AnyRef) extends AnyRef {
+	override def toString = ""
+}
