@@ -27,15 +27,15 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
       docComments ++= sless.comments
     }
   }
-  import scala.collection.mutable._
-  type IndexModel = HashMap[Char, Set[model.MemberEntity]]
-  type IndexModel2 = HashMap[Char, collection.immutable.SortedSet[model.MemberEntity]]
+  import scala.collection._
+  type IndexModel = mutable.HashMap[Char, mutable.Set[model.MemberEntity]]
+  type IndexModel2 = mutable.HashMap[Char, mutable.ListBuffer[model.MemberEntity]]
   
-  class IndexFactory(universe:Universe, indexModel:IndexModel) extends html.HtmlFactory(universe) {
+  class IndexFactory(universe:Universe, indexModel:IndexModel2) extends html.HtmlFactory(universe) {
 	import io.{ Streamable, Directory }
 	
 	/**
-	 * Borrowed from HtmlFactory generateMethod
+	 * Borrowed from HtmlFactory generate method
 	 */
 	def copyResource(subPath: String) {
       val bytes = new Streamable.Bytes {
@@ -58,31 +58,27 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
   }
   
   def indexModel(universe:Universe)={
-	  
-      val index = new IndexModel()
-      
-      
-	  class MapHelper[D <: model.MemberEntity](m:HashMap[Char, Set[D]]) {
-    	def addDoc(d:D) = {
+      implicit val ordering:math.Ordering[model.MemberEntity] = math.Ordering.String.on{ x:model.Entity => x.name.toLowerCase }      
+	  class MapHelper(m:IndexModel2) {
+    	def addDoc(d:model.MemberEntity) = {
     		val firstLetter = { 
     			val ch = d.name.head.toLower
     			if(ch.isLetterOrDigit) ch else '#'
     		}
-    	 	m(firstLetter) = if(m.contains(firstLetter)) m(firstLetter) += d else Set(d)
+    	 	m(firstLetter) = if(m.contains(firstLetter)) m(firstLetter) + d else mutable.ListBuffer(d)
     	  }  
       }
       
-      implicit def mapHelper[D <: model.MemberEntity](m:HashMap[Char, Set[D]]) = new MapHelper(m)
-      /*implicit val ordering = new math.Ordering[model.Entity] {
-    	  def compare(x:model.Entity, y:model.Entity) = math.Ordering
-      }*/
-      implicit val ordering:math.Ordering[model.Entity] = math.Ordering.String.on{ x:model.Entity => x.name }
-      val index2 = new IndexModel()
+      implicit def mapHelper[D <: model.MemberEntity](m:IndexModel2) = new MapHelper(m)      
+      
+      	  
+      val index = new IndexModel()
+      val index2 = new IndexModel2()
       
       def packView(packages:List[model.Package], tab:Int = 0):Unit = {
     	for(pack <- packages sortBy(_.name)) {
     	  // +" "+pack.isDocTemplate
-    	  println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
+    	  //println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
     	  templateView(pack, pack.templates, tab+2)
     	  packView(pack.packages,tab+2)
     	  
@@ -94,11 +90,11 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	}
       }
       def templateView(owner:model.DocTemplateEntity, templates:List[model.DocTemplateEntity], tab:Int = 0):Unit = {
-    	//if(t.inDefinitionTemplates.size==0) println("EMPTY: "+t) 
+    	
     	for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
     	  // + " = " + t.inTemplate.name +" "+t.isDocTemplate+" "+" inTemplate " + t.inDefinitionTemplates)
-    	  println((" " * tab) + nature2string(t) + " " + t.name);
-    	  index.addDoc(t)
+    	  //println((" " * tab) + nature2string(t) + " " + t.name);
+    	  //index.addDoc(t)
     	  typeView(t, t.aliasTypes, tab+2)
     	  typeView(t, t.abstractTypes, tab+2)
     	  templateView(t, t.templates, tab+2)
@@ -112,15 +108,15 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	//if(!filtered.isEmpty) print(" " * tab)
         for(member <- nonTemplates) {
         	//print(member.name+", ")
-        	index.addDoc(member)
+        	//index.addDoc(member)
         }
     	//if(!filtered.isEmpty) println()
       }
       
       def typeView(owner:model.DocTemplateEntity, types:List[model.NonTemplateMemberEntity], tab:Int = 0) = {
     	for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {    	  
-    	  println((" " * tab) +  " type " + t.name);
-    	  index.addDoc(t)
+    	  //println((" " * tab) +  " type " + t.name);
+    	  //index.addDoc(t)
     	}
       }
       import model._
@@ -131,35 +127,29 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	  if(e.isClass) "class" else ""
       }
       
-      //packView(universe.rootPackage.packages)
-      
-      def gather(owner:DocTemplateEntity, templates:List[DocTemplateEntity], tab:Int = 0):Unit = {
-    	def gather0(owner:DocTemplateEntity, members:List[MemberEntity], tab:Int=0):Unit = {
+     
+    	def gather(owner:DocTemplateEntity, members:List[MemberEntity], tab:Int=0):Unit = {
     		for(m <- members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {
     			m match {
-    				case tpl:DocTemplateEntity => {
-    					//println((" " * tab) + nature2string(tpl) + " " + tpl.name)
-    					index.addDoc(tpl)
-    					gather0(tpl, tpl.members,tab+2)
+    				case tpl:DocTemplateEntity => {    					
+    					index2.addDoc(tpl)
+    					gather(tpl, tpl.members,tab+2)
     				}
-    				case alias:AliasType =>
-    				 // println((" " * tab) + " type " + alias.name)
-    				  index.addDoc(alias)
-    				case absType:AbstractType =>
-    				  index.addDoc(absType)
-    				 // println((" " * tab) + " type " + absType.name) 
-    				case non:NonTemplateMemberEntity if !non.isConstructor => index.addDoc(non)
-    				case _ => println("Something wrong with: " + m.qualifiedName + " -> "+m.getClass)
+    				case alias:AliasType => index2.addDoc(alias)
+    				case absType:AbstractType => index2.addDoc(absType)
+    				case non:NonTemplateMemberEntity if !non.isConstructor => index2.addDoc(non)
+    				case non:NonTemplateMemberEntity if non.isConstructor => 
+    				case x @ _ => {    					
+    					println(m.qualifiedName)
+    				}
     			}
+    			
+    				
     		}
     	}
-        for(t <- templates if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
-            println((" " * tab) + nature2string(t) + " " + t.name)
-            gather0(t,t.members,tab+2)
-        }
-      }
-      
-      gather(universe.rootPackage, universe.rootPackage.packages)
+        
+      //packView(universe.rootPackage.packages)
+      gather(universe.rootPackage, universe.rootPackage.members)
       
       for(entry <- index) {
     	  println("i1. " + entry._1 + " - "+entry._2.size)
@@ -168,7 +158,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	  println("i2. " + entry._1 + " - "+entry._2.size)
       }
       
-      index
+      index2
   }
   
   /** Creates a scaladoc site for all symbols defined in this call's `files`, as well as those defined in `files` of
