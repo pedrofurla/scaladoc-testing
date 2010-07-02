@@ -4,6 +4,7 @@ package scala.tools.nsc
 package doc
 
 import reporters.Reporter
+import scala.collection._
 
 /** Copied from scala.tools.nsc.doc.DocFactory
   * TODO Rename or put the important part somewhere that make sense
@@ -27,11 +28,10 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
       docComments ++= sless.comments
     }
   }
-  import scala.collection._
-  type IndexModel = mutable.HashMap[Char, mutable.Set[model.MemberEntity]]
-  type IndexModel2 = mutable.HashMap[Char, mutable.ListBuffer[model.MemberEntity]]
+  // TODO Found that IndexModel has to use a Set, otherwise overloaded methods get repeated.
+  type IndexModel = mutable.HashMap[Char, mutable.ListBuffer[model.MemberEntity]]
   
-  class IndexFactory(universe:Universe, indexModel:IndexModel2) extends html.HtmlFactory(universe) {
+  class IndexFactory(universe:Universe, indexModel:IndexModel) extends html.HtmlFactory(universe) {
 	import io.{ Streamable, Directory }
 	
 	/**
@@ -58,9 +58,10 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
   }
   
   def indexModel(universe:Universe)={
-      implicit val ordering:math.Ordering[model.MemberEntity] = math.Ordering.String.on{ x:model.Entity => x.name.toLowerCase }      
-	  class MapHelper(m:IndexModel2) {
-    	def addDoc(d:model.MemberEntity) = {
+      import model._
+      
+	  class MapHelper(m:IndexModel) {
+    	def addDoc(d:MemberEntity) = {
     		val firstLetter = { 
     			val ch = d.name.head.toLower
     			if(ch.isLetterOrDigit) ch else '#'
@@ -69,96 +70,30 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     	  }  
       }
       
-      implicit def mapHelper[D <: model.MemberEntity](m:IndexModel2) = new MapHelper(m)      
-      
-      	  
+      implicit def mapHelper[D <: MemberEntity](m:IndexModel) = new MapHelper(m)      
       val index = new IndexModel()
-      val index2 = new IndexModel2()
       
-      def packView(packages:List[model.Package], tab:Int = 0):Unit = {
-    	for(pack <- packages sortBy(_.name)) {
-    	  // +" "+pack.isDocTemplate
-    	  //println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
-    	  templateView(pack, pack.templates, tab+2)
-    	  packView(pack.packages,tab+2)
-    	  
-    	  nonTemplateView(pack, pack.methods,tab+2)
-    	  nonTemplateView(pack, pack.values,tab+2)
-    	  
-    	  typeView(pack, pack.aliasTypes, tab+2)
-    	  typeView(pack, pack.abstractTypes, tab+2)
-    	}
-      }
-      def templateView(owner:model.DocTemplateEntity, templates:List[model.DocTemplateEntity], tab:Int = 0):Unit = {
-    	
-    	for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
-    	  // + " = " + t.inTemplate.name +" "+t.isDocTemplate+" "+" inTemplate " + t.inDefinitionTemplates)
-    	  //println((" " * tab) + nature2string(t) + " " + t.name);
-    	  //index.addDoc(t)
-    	  typeView(t, t.aliasTypes, tab+2)
-    	  typeView(t, t.abstractTypes, tab+2)
-    	  templateView(t, t.templates, tab+2)
-    	  nonTemplateView(t, t.methods,tab+2)
-    	  nonTemplateView(t, t.values,tab+2)
-    	}
-      }
-      
-      def nonTemplateView(owner:model.DocTemplateEntity, nonTemplates:List[model.NonTemplateMemberEntity], tab:Int) = {
-    	val filtered = nonTemplates.filter( _.inDefinitionTemplates.head == owner )
-    	//if(!filtered.isEmpty) print(" " * tab)
-        for(member <- nonTemplates) {
-        	//print(member.name+", ")
-        	//index.addDoc(member)
-        }
-    	//if(!filtered.isEmpty) println()
-      }
-      
-      def typeView(owner:model.DocTemplateEntity, types:List[model.NonTemplateMemberEntity], tab:Int = 0) = {
-    	for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {    	  
-    	  //println((" " * tab) +  " type " + t.name);
-    	  //index.addDoc(t)
-    	}
-      }
-      import model._
-      def nature2string(e : model.TemplateEntity) = {    	  
-    	  if(e.isTrait) "trait" else
-    	  if(e.isObject) "object" else
-    	  if(e.isPackage) "package" else
-    	  if(e.isClass) "class" else ""
-      }
-      
-     
-    	def gather(owner:DocTemplateEntity, members:List[MemberEntity], tab:Int=0):Unit = {
-    		for(m <- members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {
-    			m match {
-    				case tpl:DocTemplateEntity => {    					
-    					index2.addDoc(tpl)
-    					gather(tpl, tpl.members,tab+2)
-    				}
-    				case alias:AliasType => index2.addDoc(alias)
-    				case absType:AbstractType => index2.addDoc(absType)
-    				case non:NonTemplateMemberEntity if !non.isConstructor => index2.addDoc(non)
-    				case non:NonTemplateMemberEntity if non.isConstructor => 
-    				case x @ _ => {    					
-    					println(m.qualifiedName)
-    				}
-    			}
-    			
-    				
-    		}
-    	}
-        
-      //packView(universe.rootPackage.packages)
+      //@scala.annotation.tailrec // TODO
+	  def gather(owner:DocTemplateEntity, members:List[MemberEntity]):Unit =
+		for(m <- members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {
+			m match {
+				case tpl:DocTemplateEntity => {    					
+					index.addDoc(tpl)
+					gather(tpl, tpl.members)
+				}
+				case alias:AliasType => index.addDoc(alias)
+				case absType:AbstractType => index.addDoc(absType)
+				case non:NonTemplateMemberEntity if !non.isConstructor => index.addDoc(non)
+				case non:NonTemplateMemberEntity if non.isConstructor => 
+				case x @ _ => {    					
+					println(m.qualifiedName)
+				}
+			}    				
+		}
+
       gather(universe.rootPackage, universe.rootPackage.members)
       
-      for(entry <- index) {
-    	  println("i1. " + entry._1 + " - "+entry._2.size)
-      }
-      for(entry <- index2) {
-    	  println("i2. " + entry._1 + " - "+entry._2.size)
-      }
-      
-      index2
+      index
   }
   
   /** Creates a scaladoc site for all symbols defined in this call's `files`, as well as those defined in `files` of
@@ -176,7 +111,83 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
             
       val index = indexModel(docModel)  
       new IndexFactory(docModel,index).generate
+      //oldHierarchyBuilder(docModel)
     }
   }
+  
+  // Will be used to figure out why 'java' elements were being added
+  def oldHierarchyBuilder(uni:Universe):Unit = {
+	  import model._
+	  
+      type IndexModel = mutable.HashMap[Char, mutable.Set[MemberEntity]]
+	  class MapHelper(m:IndexModel) {
+    	def addDoc(d:MemberEntity) = {
+    		val firstLetter = { 
+    			val ch = d.name.head.toLower
+    			if(ch.isLetterOrDigit) ch else '#'
+    		}
+    	 	m(firstLetter) = if(m.contains(firstLetter)) m(firstLetter) + d else mutable.Set(d)
+    	  }  
+      }
+      
+      implicit def mapHelper[D <: MemberEntity](m:IndexModel) = new MapHelper(m)  
+	  
+	  val index = new IndexModel()      
+      def packView(packages:List[Package], tab:Int = 0):Unit = {
+    	for(pack <- packages sortBy(_.name)) {
+    	  // +" "+pack.isDocTemplate
+    	  //println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
+    	  templateView(pack, pack.templates, tab+2)
+    	  packView(pack.packages,tab+2)
+    	  
+    	  nonTemplateView(pack, pack.methods,tab+2)
+    	  nonTemplateView(pack, pack.values,tab+2)
+    	  
+    	  typeView(pack, pack.aliasTypes, tab+2)
+    	  typeView(pack, pack.abstractTypes, tab+2)
+    	}
+      }
+      def templateView(owner:DocTemplateEntity, templates:List[DocTemplateEntity], tab:Int = 0):Unit = {
+    	
+    	for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
+    	  // + " = " + t.inTemplate.name +" "+t.isDocTemplate+" "+" inTemplate " + t.inDefinitionTemplates)
+    	  //println((" " * tab) + nature2string(t) + " " + t.name);
+    	  //index.addDoc(t)
+    	  typeView(t, t.aliasTypes, tab+2)
+    	  typeView(t, t.abstractTypes, tab+2)
+    	  templateView(t, t.templates, tab+2)
+    	  nonTemplateView(t, t.methods,tab+2)
+    	  nonTemplateView(t, t.values,tab+2)
+    	}
+      }
+      
+      def nonTemplateView(owner:DocTemplateEntity, nonTemplates:List[NonTemplateMemberEntity], tab:Int) = {
+    	val filtered = nonTemplates.filter( _.inDefinitionTemplates.head == owner )
+    	//if(!filtered.isEmpty) print(" " * tab)
+        for(member <- nonTemplates) {
+        	//print(member.name+", ")
+        	//index.addDoc(member)
+        }
+    	//if(!filtered.isEmpty) println()
+      }
+      
+      def typeView(owner:DocTemplateEntity, types:List[NonTemplateMemberEntity], tab:Int = 0) = {
+    	for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {    	  
+    	  //println((" " * tab) +  " type " + t.name);
+    	  //index.addDoc(t)
+    	}
+      }
+      
+      def nature2string(e : TemplateEntity) = {    	  
+    	  if(e.isTrait) "trait" else
+    	  if(e.isObject) "object" else
+    	  if(e.isPackage) "package" else
+    	  if(e.isClass) "class" else ""
+      }
+      
+      packView(uni.rootPackage.packages)
+  }
+  
+  
   
 }
