@@ -31,5 +31,15 @@
 			<exclude name="**/*.tmpl"/>
 		</scaladoc>
 	</target>
-
+	<target name="scaladoc-compiler" >
+		<scaladoc srcdir="${SCALA_SRC}/src/" 
+			destdir="${tmp}/doc-compiler"
+			classpathref="scala.classpath">
+			<include name="compiler/**/*.scala"/>
+			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
+			<exclude name="**/*.xml"/>
+			<exclude name="**/*.tmpl"/>
+		</scaladoc>
+	</target>
+	
 </project>

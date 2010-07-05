@@ -18,6 +18,7 @@
 <!--      <pathelement path="bin"/>-->
       <pathelement location="${SCALA_HOME_28}/lib/scala-library.jar"/>
       <pathelement path="${PROJECT_LOC}/bin"/>
+    	<pathelement path="${PROJECT_LOC}/lib/ant-1.8.0.jar"/>
       <pathelement path="${PROJECT_LOC}/../scaladoc-testing/bin"/>
       <!-- <pathelement location="${SCALA_HOME_28}/lib/scala-swing.jar"/> -->
       <pathelement location="${SCALA_HOME_28}/lib/scala-compiler.jar"/>
