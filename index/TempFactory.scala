@@ -34,7 +34,7 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
   // HashMap[Name's First Letter, HashMap[Name, SortedSet[Owner Template]]
   type IndexModel2 = mutable.HashMap[Char, mutable.HashMap[String,SortedSet[model.TemplateEntity]]]
   
-  class IndexFactory(universe:Universe, indexModel:IndexModel) extends html.HtmlFactory(universe) {
+  class IndexFactory(universe:Universe, indexModel:IndexModel2) extends html.HtmlFactory(universe) {
 	import io.{ Streamable, Directory }
 	
 	/**
@@ -79,21 +79,22 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     					m(firstLetter)(d.name) + d.inDefinitionTemplates.head 
     				else SortedSet(d.inDefinitionTemplates.head)
     		} else {
-    			m(firstLetter)..$init$.
+    			m(firstLetter) = mutable.HashMap( (d.name, SortedSet(d.inDefinitionTemplates.head)) )
     		}
-    	 	
+    	 	//if(d.name=="toString") println(firstLetter + ": "+d.name+": " + m(firstLetter)(d.name))
     	  }  
       }
-            
-      implicit def mapHelper(m:IndexModel2) = new MapHelper(m)
+      
+      implicit def mapHelper(m:IndexModel2) = new MapHelper(m)     
                  
       //@scala.annotation.tailrec // TODO
-	  def gather(owner:DocTemplateEntity, members:List[MemberEntity]):Unit =
-		for(m <- members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {
+	  def gather(owner:DocTemplateEntity):Unit = {	 	  
+		for(m <- owner.members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {
+			computedMembers = computedMembers + 1
 			m match {
 				case tpl:DocTemplateEntity => {    					
 					index.addDoc(tpl)
-					gather(tpl, tpl.members)
+					gather(tpl)
 				}
 				case alias:AliasType => index.addDoc(alias)
 				case absType:AbstractType => index.addDoc(absType)
@@ -104,12 +105,12 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
 				}
 			}    				
 		}
-
-      gather(universe.rootPackage, universe.rootPackage.members)
+      }
+      gather(universe.rootPackage)
       
       index
   }
-  
+   var computedMembers = 0L
   /** Creates a scaladoc site for all symbols defined in this call's `files`, as well as those defined in `files` of
     * previous calls to the same processor.
     * @param files The list of paths (relative to the compiler's source path, or absolute) of files to document. */
@@ -124,7 +125,16 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
       println("model contains " + modelFactory.templatesCount + " documentable templates")
             
       val index = indexModel(docModel)  
-      new IndexFactory(docModel,index).generate
+      val time1 = System.nanoTime
+      val indexFactory = new IndexFactory(docModel,index)
+      val time2 = System.nanoTime
+      indexFactory.generate
+      val time3 = System.nanoTime
+      
+      printf("Structure generation: %,d\n", (time2-time1))
+      printf("Writing files: %,d\n", (time3-time2))
+      printf("computedMembers: %,d\n", (computedMembers))
+      
       //oldHierarchyBuilder(docModel)
     }
   }

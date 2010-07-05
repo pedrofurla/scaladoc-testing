@@ -13,7 +13,7 @@ import model._
 import scala.collection._
 import scala.xml._
 
-class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, universe:Universe) extends HtmlPage {
+class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel2, universe:Universe) extends HtmlPage {
   
   def path = List("index-"+letter+".html","index")
 
@@ -44,7 +44,7 @@ class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, univers
  	      println("unknown "+ u+ " " +u.getClass); "" 
 	  }
   }
-  val groupedMembers = indexModel(letter).groupBy({_.name})  
+  val groupedMembers = indexModel(letter) //.groupBy({_.name})  
   def indexLinks = 
 	  <div class="letters">
   		{ for(l <- indexModel.keySet.toList.sortBy( _.toString )) yield { // TODO This line is extremelly stupid
@@ -63,11 +63,15 @@ class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, univers
     	<div class="entry">
     		<div class="name">{ groups._1 }</div> 
     		<div class="occurrences">
-    		  { for(member <- groups._2) yield { // .toList.sortBy(_.inDefinitionTemplates.head.name.toLowerCase)
-    			  val owner = member.inDefinitionTemplates.head
-    			  <span>{xml.Text(nature2string(member)+" in ")}</span> ++ 
+    		  { var acc = NodeSeq.Empty 
+    		 	for(owner <- groups._2) { // .toList.sortBy(_.inDefinitionTemplates.head.name.toLowerCase)
+    			  //val owner = member.inDefinitionTemplates.head
+    		 	  // {xml.Text(nature2string(member)+" in ")}
+    		 		
+    			  acc = acc ++ <span></span> ++ 
     			    templateToHtml(owner) ++ xml.Text(" ")
-    		  } } 
+    		  } 
+    		   acc } 
     		</div>
     	</div>
        } }
