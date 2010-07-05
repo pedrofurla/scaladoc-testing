@@ -28,13 +28,11 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
       docComments ++= sless.comments
     }
   }
-  // TODO Found that IndexModel has to use a Set, otherwise overloaded methods get repeated.
-  type IndexModel = mutable.HashMap[Char, SortedSet[model.MemberEntity]] // apparently sortedset is keeping only one element
   
-  // HashMap[Name's First Letter, HashMap[Name, SortedSet[Owner Template]]
-  type IndexModel2 = mutable.HashMap[Char, mutable.HashMap[String,SortedSet[model.TemplateEntity]]]
+  // HashMap[symbol name's first letter, SortedMap[symbol name, SortedSet[owner template]]
+  type IndexModel = mutable.HashMap[Char, immutable.SortedMap[String,SortedSet[model.TemplateEntity]]]
   
-  class IndexFactory(universe:Universe, indexModel:IndexModel2) extends html.HtmlFactory(universe) {
+  class IndexFactory(universe:Universe, indexModel:IndexModel) extends html.HtmlFactory(universe) {
 	import io.{ Streamable, Directory }
 	
 	/**
@@ -63,54 +61,52 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
   def indexModel(universe:Universe)={
       import model._
             
-      val index = new IndexModel2()      
+      val index = new IndexModel with IndexMap
+      
 	  
-      class MapHelper(m:IndexModel2) {
-    	implicit def ordering = math.Ordering.String.on { x:TemplateEntity => x.name.toLowerCase }
+      trait IndexMap { self : IndexModel => 
+    	implicit def orderingSet = math.Ordering.String.on { x:TemplateEntity => x.name.toLowerCase }
+    	implicit def orderingMap = math.Ordering.String.on { x:String => x.toLowerCase }
     	
-    	def addDoc(d:MemberEntity) = {
+    	def addMember(d:MemberEntity) = {
     		val firstLetter = { 
     			val ch = d.name.head.toLower
     			if(ch.isLetterOrDigit) ch else '#'
     		}
-    		if(m.contains(firstLetter)) {
-    			m(firstLetter)(d.name) = 
-    				if(m(firstLetter).contains(d.name)) 
-    					m(firstLetter)(d.name) + d.inDefinitionTemplates.head 
-    				else SortedSet(d.inDefinitionTemplates.head)
+    		
+    		if(this.contains(firstLetter)) {
+    			val letter = this(firstLetter)
+    			val value = this(firstLetter).get(d.name).getOrElse(SortedSet.empty[TemplateEntity]) + d.inDefinitionTemplates.head
+    			this(firstLetter) = letter + ((d.name, value))    			
     		} else {
-    			m(firstLetter) = mutable.HashMap( (d.name, SortedSet(d.inDefinitionTemplates.head)) )
+    			this(firstLetter) = immutable.SortedMap( (d.name, SortedSet(d.inDefinitionTemplates.head)) )
     		}
-    	 	//if(d.name=="toString") println(firstLetter + ": "+d.name+": " + m(firstLetter)(d.name))
     	  }  
       }
       
-      implicit def mapHelper(m:IndexModel2) = new MapHelper(m)     
+      //implicit def mapHelper(m:IndexModel) = new MapHelper(m)     
                  
       //@scala.annotation.tailrec // TODO
-	  def gather(owner:DocTemplateEntity):Unit = {	 	  
-		for(m <- owner.members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) {
-			computedMembers = computedMembers + 1
+	  def gather(owner:DocTemplateEntity):Unit = 	 	  
+		for(m <- owner.members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) 
 			m match {
 				case tpl:DocTemplateEntity => {    					
-					index.addDoc(tpl)
+					index.addMember(tpl)
 					gather(tpl)
 				}
-				case alias:AliasType => index.addDoc(alias)
-				case absType:AbstractType => index.addDoc(absType)
-				case non:NonTemplateMemberEntity if !non.isConstructor => index.addDoc(non)
+				case alias:AliasType => index.addMember(alias)
+				case absType:AbstractType => index.addMember(absType)
+				case non:NonTemplateMemberEntity if !non.isConstructor => index.addMember(non)
 				case non:NonTemplateMemberEntity if non.isConstructor => 
-				case x @ _ => {    					
-					println(m.qualifiedName)
-				}
-			}    				
-		}
-      }
+				case x @ _ => 
+			}
+		
+      
       gather(universe.rootPackage)
       
       index
   }
-   var computedMembers = 0L
+   
   /** Creates a scaladoc site for all symbols defined in this call's `files`, as well as those defined in `files` of
     * previous calls to the same processor.
     * @param files The list of paths (relative to the compiler's source path, or absolute) of files to document. */
@@ -121,97 +117,24 @@ class TempFactory(val reporter: Reporter, val settings: doc.Settings) { processo
     assert(settings.docformat.value == "html")
     if (!reporter.hasErrors) {
       val modelFactory = (new model.ModelFactory(compiler, settings) with model.comment.CommentFactory)
+      
+      val time1 = new java.util.Date().getTime
       val docModel = modelFactory.makeModel
       println("model contains " + modelFactory.templatesCount + " documentable templates")
-            
-      val index = indexModel(docModel)  
-      val time1 = System.nanoTime
-      val indexFactory = new IndexFactory(docModel,index)
-      val time2 = System.nanoTime
-      indexFactory.generate
-      val time3 = System.nanoTime
       
-      printf("Structure generation: %,d\n", (time2-time1))
-      printf("Writing files: %,d\n", (time3-time2))
-      printf("computedMembers: %,d\n", (computedMembers))
+      val time2 = new java.util.Date().getTime
+      val index = indexModel(docModel)  
+      val time3 = new java.util.Date().getTime 
+      val indexFactory = new IndexFactory(docModel,index)      
+      indexFactory.generate
+      val time4 = new java.util.Date().getTime
+      
+      printf("compilation: %,d ms\n", (time2-time1))
+      printf("index structure generation: %,d ms\n", (time3-time2))
+      printf("writing files: %,d ms\n", (time4-time3))
       
       //oldHierarchyBuilder(docModel)
     }
   }
-  
-  // Will be used to figure out why 'java' elements were being added
-  def oldHierarchyBuilder(uni:Universe):Unit = {
-	  import model._
-	  
-      type IndexModel = mutable.HashMap[Char, mutable.Set[MemberEntity]]
-	  class MapHelper(m:IndexModel) {
-    	def addDoc(d:MemberEntity) = {
-    		val firstLetter = { 
-    			val ch = d.name.head.toLower
-    			if(ch.isLetterOrDigit) ch else '#'
-    		}
-    	 	m(firstLetter) = if(m.contains(firstLetter)) m(firstLetter) + d else mutable.Set(d)
-    	  }  
-      }
       
-      implicit def mapHelper[D <: MemberEntity](m:IndexModel) = new MapHelper(m)  
-	  
-	  val index = new IndexModel()      
-      def packView(packages:List[Package], tab:Int = 0):Unit = {
-    	for(pack <- packages sortBy(_.name)) {
-    	  // +" "+pack.isDocTemplate
-    	  //println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
-    	  templateView(pack, pack.templates, tab+2)
-    	  packView(pack.packages,tab+2)
-    	  
-    	  nonTemplateView(pack, pack.methods,tab+2)
-    	  nonTemplateView(pack, pack.values,tab+2)
-    	  
-    	  typeView(pack, pack.aliasTypes, tab+2)
-    	  typeView(pack, pack.abstractTypes, tab+2)
-    	}
-      }
-      def templateView(owner:DocTemplateEntity, templates:List[DocTemplateEntity], tab:Int = 0):Unit = {
-    	
-    	for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
-    	  // + " = " + t.inTemplate.name +" "+t.isDocTemplate+" "+" inTemplate " + t.inDefinitionTemplates)
-    	  //println((" " * tab) + nature2string(t) + " " + t.name);
-    	  //index.addDoc(t)
-    	  typeView(t, t.aliasTypes, tab+2)
-    	  typeView(t, t.abstractTypes, tab+2)
-    	  templateView(t, t.templates, tab+2)
-    	  nonTemplateView(t, t.methods,tab+2)
-    	  nonTemplateView(t, t.values,tab+2)
-    	}
-      }
-      
-      def nonTemplateView(owner:DocTemplateEntity, nonTemplates:List[NonTemplateMemberEntity], tab:Int) = {
-    	val filtered = nonTemplates.filter( _.inDefinitionTemplates.head == owner )
-    	//if(!filtered.isEmpty) print(" " * tab)
-        for(member <- nonTemplates) {
-        	//print(member.name+", ")
-        	//index.addDoc(member)
-        }
-    	//if(!filtered.isEmpty) println()
-      }
-      
-      def typeView(owner:DocTemplateEntity, types:List[NonTemplateMemberEntity], tab:Int = 0) = {
-    	for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {    	  
-    	  //println((" " * tab) +  " type " + t.name);
-    	  //index.addDoc(t)
-    	}
-      }
-      
-      def nature2string(e : TemplateEntity) = {    	  
-    	  if(e.isTrait) "trait" else
-    	  if(e.isObject) "object" else
-    	  if(e.isPackage) "package" else
-    	  if(e.isClass) "class" else ""
-      }
-      
-      packView(uni.rootPackage.packages)
-  }
-  
-  
-  
 }

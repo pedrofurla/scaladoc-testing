@@ -13,7 +13,7 @@ import model._
 import scala.collection._
 import scala.xml._
 
-class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel2, universe:Universe) extends HtmlPage {
+class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, universe:Universe) extends HtmlPage {
   
   def path = List("index-"+letter+".html","index")
 
@@ -63,15 +63,9 @@ class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel2, univer
     	<div class="entry">
     		<div class="name">{ groups._1 }</div> 
     		<div class="occurrences">
-    		  { var acc = NodeSeq.Empty 
-    		 	for(owner <- groups._2) { // .toList.sortBy(_.inDefinitionTemplates.head.name.toLowerCase)
-    			  //val owner = member.inDefinitionTemplates.head
-    		 	  // {xml.Text(nature2string(member)+" in ")}
-    		 		
-    			  acc = acc ++ <span></span> ++ 
-    			    templateToHtml(owner) ++ xml.Text(" ")
-    		  } 
-    		   acc } 
+    		  { for(owner <- groups._2.view) yield {     		 		
+    			  templateToHtml(owner) ++ xml.Text(" ")
+    		  } }
     		</div>
     	</div>
        } }
