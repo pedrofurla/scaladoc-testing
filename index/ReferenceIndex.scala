@@ -13,7 +13,7 @@ import model._
 import scala.collection._
 import scala.xml._
 
-class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, universe:Universe) extends HtmlPage {
+class ReferenceIndex(letter:Char, indexModel:model.IndexModelFactory#IndexModel, universe:Universe) extends HtmlPage {
   
   def path = List("index-"+letter+".html","index")
 
@@ -44,7 +44,7 @@ class ReferenceIndex(letter:Char, indexModel:doc.TempFactory#IndexModel, univers
  	      println("unknown "+ u+ " " +u.getClass); "" 
 	  }
   }
-  val groupedMembers = indexModel(letter) //.groupBy({_.name})  
+  val groupedMembers = indexModel(letter)
   def indexLinks = 
 	  <div class="letters">
   		{ for(l <- indexModel.keySet.toList.sortBy( _.toString )) yield { // TODO This line is extremelly stupid
