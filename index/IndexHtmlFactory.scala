@@ -2,7 +2,7 @@ package scala.tools.nsc
 package doc
 package html
 
-class IndexHtmlFactory(universe:Universe, indexModel:model.IndexModelFactory#IndexModel) extends html.HtmlFactory(universe) {
+class IndexHtmlFactory(universe:Universe, indexModel:model.IndexModelFactory#IndexModel) extends HtmlFactory(universe) {
 	import io.{ Streamable, Directory }
 	
 	/**

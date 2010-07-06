@@ -14,11 +14,12 @@ class Build(info: ProjectInfo) extends DefaultProject(info) {
   override def mainScalaSourcePath = "index"
   
   val dep = "org.apache.ant" % "ant" % "1.8.0"
-  val dep2 = "org.scala-lang" % "scala-compiler" % "2.8.0.RC7"
+  //val dep2 = "org.scala-lang" % "scala-compiler" % "2.8.0-SNAP"
   override def filterScalaJars = false
   
   //val scalaToolsSnapshots = "Scala-Tools Maven2 Snapshots Repository" at "http://scala-tools.org/repo-snapshots"
   
   val mavenLocal = "Local Maven Repository" at "file://"+"C:/java/maven/repo"
 
+  
 }
