@@ -1,0 +1,9 @@
+/samples
+/bin
+.classpath
+.project
+.scala_dependencies
+target/
+lib_managed/
+src_managed/
+project/boot/
