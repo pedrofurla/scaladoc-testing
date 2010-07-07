@@ -12,6 +12,11 @@ class Build(info: ProjectInfo) extends DefaultProject(info) {
   override def outputDirectoryName = "bin"
   
   override def mainScalaSourcePath = "index"
+	  
+  override def mainSources : PathFinder = {
+	  println("invoked")
+	  ("index" ** "*.scala") +++ ("test" ** "*.scala") 
+  }
   
   val dep = "org.apache.ant" % "ant" % "1.8.0"
   //val dep2 = "org.scala-lang" % "scala-compiler" % "2.8.0-SNAP"
