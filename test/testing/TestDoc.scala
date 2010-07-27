@@ -123,7 +123,7 @@ Doc val d
 * @author Pedro
 * @deprecated use TestDoc
 */
-object TestDoc extends TestDoc {
+object TestDoc {
 	/** Constroi...
 	 * @return um TestDoc
 	 * @deprecated Taglet Deprecated 
