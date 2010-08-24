@@ -7,14 +7,12 @@ import scala.collection._
 class IndexModelFactory {
 	
   // HashMap[symbol name's first letter, SortedMap[symbol name, SortedSet[owner template]]
-  type IndexModel = mutable.HashMap[Char, immutable.SortedMap[String,SortedSet[model.TemplateEntity]]]
+  type IndexModel = mutable.HashMap[Char, immutable.SortedMap[String,SortedSet[model.TemplateEntity]]] 
   
   def indexModel(universe:Universe)={
       import model._
             
-      val index = new IndexModel with IndexMap      
-	  
-      trait IndexMap { self : IndexModel =>
+      val index = new IndexModel { 
       	/** Owner template ordering */
     	implicit def orderingSet = math.Ordering.String.on { x:TemplateEntity => x.name.toLowerCase }
     	/** symbol name ordering */
@@ -34,8 +32,8 @@ class IndexModelFactory {
 	    			immutable.SortedMap( (d.name, SortedSet(d.inDefinitionTemplates.head)) )
 	    		}
     	  }  
-      }
-      
+      }      
+	              
       //@scala.annotation.tailrec // TODO
 	  def gather(owner:DocTemplateEntity):Unit = 	 	  
 		for(m <- owner.members if m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner) 
