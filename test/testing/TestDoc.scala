@@ -38,7 +38,8 @@ package testing
 * @see This should emit a warning [[testing.ParentDoc the parent]]
 * @see [[testing.TestDoc]]
 */
-class TestDoc(val p2:String="AAA", val p3:Int=5, var p4:Double = 1.0, var aList:List[Int]= 1 :: 2 :: 3 :: Nil) extends ParentDoc(1)(p2,1) {
+class TestDoc(val p2:String="AAA", val p3:Int=5, var p4:Double = 1.0, var aList:List[Int]= 1 :: 2 :: 3 :: Nil) 
+	extends ParentDoc[List,Int,Seq](1)(p2,1) {
 	
 	override val a = 1
 	
@@ -116,6 +117,10 @@ Doc val d
   def toDoSomething(x:String) = ""
     
   override def toString = ""
+	  
+  def contextBounds[A:List](x:A) = ""
+	  
+  def complexDefaultValue(aList:List[Int]= 1 :: 2 :: 3 :: Nil) = ""
 }
 
 /** 
