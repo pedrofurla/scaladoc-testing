@@ -1,7 +1,7 @@
-<project name="scalaDoc2-scala" default="scaladoc-library-list">
+<project name="scalaDoc2-scala" default="scaladoc-library-shallow">
 	<import file="local-config.xml"/>
-	<target name="scaladoc-library-list">
-		<scaladoc srcdir="${SCALA_SRC}/src/" destdir="${tmp}/doc-library" 
+	<target name="scaladoc-library-shallow">
+		<scaladoc srcdir="${SCALA_SRC}/src/" destdir="${TMP}/doc-library" 
 			classpathref="scala.classpath">
 			<include name="library/scala/collection/immutable/*.scala" />
 			<include name="library/scala/collection/*.scala" />
@@ -11,9 +11,9 @@
 		</scaladoc>
 	</target>
 
-	<target name="scaladoc-library-shallow">
+	<target name="scaladoc-library-collection">
 		<scaladoc srcdir="${SCALA_SRC}/src/"
-    		destdir="${tmp}/doc-library"
+    		destdir="${TMP}/doc-library"
     		classpathref="scala.classpath">
 			<include name="library/scala/collection/**/*.scala"/>
 			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
@@ -23,7 +23,7 @@
 	</target>
 	<target name="scaladoc-library" >
 		<scaladoc srcdir="${SCALA_SRC}/src/" 
-    		destdir="${tmp}/doc-library"
+    		destdir="${TMP}/doc-library"
     		classpathref="scala.classpath">
 			<include name="library/**/*.scala"/>
 			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
@@ -33,7 +33,7 @@
 	</target>
 	<target name="scaladoc-dbc" >
 		<scaladoc srcdir="${SCALA_SRC}/src/" 
-    		destdir="${tmp}/doc-dbc"
+    		destdir="${TMP}/doc-dbc"
     		classpathref="scala.classpath">
 			<include name="dbc/**/*.scala"/>
 			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
@@ -43,7 +43,7 @@
 	</target>
 	<target name="scaladoc-compiler" >
 		<scaladoc srcdir="${SCALA_SRC}/src/" 
-			destdir="${tmp}/doc-compiler"
+			destdir="${TMP}/doc-compiler"
 			classpathref="scala.classpath">
 			<include name="compiler/**/*.scala"/>
 			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>

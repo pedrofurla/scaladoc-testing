@@ -1,16 +1,13 @@
 <project name="scalaDoc2-test" default="scaladoc-testing">
     <import file="local-config.xml"/>
-    <fileset id="files" >
-        <include name="test/**/*.scala"/>
-    </fileset>
-    <echo>${files}</echo>
+    <echo>${ant.file}</echo>
     <!--  docsourceurl="file:///C:/dev/langs/scala/projects/src" -->
     <target name="scaladoc-testing">
-        <scaladoc srcdir="." sourcepath="test"  
-                  destdir="${tmp}/doc-testing"
-                  classpathref="scala.classpath">
-            <include name="test/**/*.scala"/>
-            <include name="users/**/*.scala"/>
+        <scaladoc srcdir="." sourcepath="${PROJECT_LOC}/../scaladoc-testing"
+        	   docsourceurl="file:///C:/dev/langs/scala/projects/src"
+               destdir="${TMP}/doc-testing"
+               classpathref="scala.classpath">
+            <include name="samples/**/*.scala"/>
         </scaladoc>
     </target>
 </project>
