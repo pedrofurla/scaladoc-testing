@@ -5,6 +5,6 @@
 <mapEntry key="JAVA_HOME" value="G:\Program Files\Java\jdk1.7.0"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${SCALA_HOME_28}\bin\scalac.bat"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Xprint:typer  -Xlog-implicits -Xexperimental  -cp &quot;G:\Program Files\java\jdk1.6.0_18\lib\tools.jar;bin&quot; ${resource_loc}"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/ScalaDoc2}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Xprint:typer  -Xlog-implicits -Xexperimental -classpath ${project_loc}/bin ${resource_loc}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/scala-query}"/>
 </launchConfiguration>

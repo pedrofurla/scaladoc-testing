@@ -6,10 +6,11 @@
     <echo>${files}</echo>
     <!--  docsourceurl="file:///C:/dev/langs/scala/projects/src" -->
     <target name="scaladoc-testing">
-        <scaladoc srcdir="." sourcepath="test"  docsourceurl="file:///C:/dev/langs/scala/projects/src"
+        <scaladoc srcdir="." sourcepath="test"  
                   destdir="${tmp}/doc-testing"
                   classpathref="scala.classpath">
             <include name="test/**/*.scala"/>
+            <include name="users/**/*.scala"/>
         </scaladoc>
     </target>
 </project>
