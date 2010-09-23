@@ -30,7 +30,7 @@ class DocCompiler(val files:List[File]) {
 
 class Sources(val directory:Directory) {		
 	lazy val scalaFiles = 
-	  directory.walkFilter( _.name != ".git" )
+	  directory.walkFilter( x => x.name != ".git" && x.name != ".svn")
 	  .filter(f => f.isFile && f.name.endsWith(".scala")) map(_.toFile) toList 
 }
 
