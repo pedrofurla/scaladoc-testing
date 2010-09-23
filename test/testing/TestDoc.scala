@@ -41,6 +41,8 @@ package testing
 class TestDoc(val p2:String="AAA", val p3:Int=5, var p4:Double = 1.0, var aList:List[Int]= 1 :: 2 :: 3 :: Nil) 
 	extends ParentDoc[List,Int,Seq](1)(p2,1) {
 	
+	type absType = Int
+	
 	override val a = 1
 	
 	implicit val b = 3

@@ -68,7 +68,8 @@ A paragraph starting in the first column. Followed by a list
  */
 @deprecated("mensagem") 
 abstract class ParentDoc[Z[X],T,G[Y]](x:Int)(implicit p1:String, p2: Int) extends AbstractParentDoc[Z,T,G] {
-		
+	
+	
 	def typeBounds[Z[_],Seq[A] >: Z[T] <: ArrayStack[A] ]:Unit = {}
 	
 	def this(nonSense:String) = this(1)("",5)
@@ -97,6 +98,8 @@ abstract class ParentDoc[Z[X],T,G[Y]](x:Int)(implicit p1:String, p2: Int) extend
 
 	/** Testing how Scaladoc deals with anonymous classes */
 	def newSuper = new AbstractParentDoc[Z,T,G] {
+		
+		type absType = Int
 		/** Already declared */
 		val valAbsString:String = ""
 		/** Already declared */
