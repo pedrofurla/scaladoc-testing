@@ -27,13 +27,15 @@ class DocCompiler(val files:List[File]) {
   }
       
 }
-
-class Sources(val directory:Directory) {		
-	lazy val scalaFiles = 
+object util {
+	/** Given a directory recursivelly returns the list of files ending with `.scala`. 
+	 *  Directories named `.git` or `.svn` are ignored. */
+	def scalaFiles(directory:Directory) = 
 	  directory.walkFilter( x => x.name != ".git" && x.name != ".svn")
-	  .filter(f => f.isFile && f.name.endsWith(".scala")) map(_.toFile) toList 
+	  .filter(f => f.isFile && f.name.endsWith(".scala")) map(_.toFile) toList
+	  
+	def docUniverse(files:List[File]) = new DocCompiler(files).docUniverse 
 }
-
 object Run {
 	def main(args:Array[String]) = {
 		
