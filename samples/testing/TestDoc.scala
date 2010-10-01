@@ -81,7 +81,6 @@ Doc val d
 	* @author ''fulano2''
 	* @see ParentDoc
 	* @see TestDoc
-	* @usecase def blah:this.type
 	*/
 	implicit def method:this.type = this
 	
@@ -100,7 +99,6 @@ Doc val d
 	 * Simple 
 	 * @deprecated Taglet depre. msg
 	 * @author alalal
-	 * @usecase def anotherBBB
 	 */
 	def anotherMethod = 0;
 

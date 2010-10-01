@@ -1,4 +1,4 @@
-package io
+package util
 
 import scala.tools.nsc.io._
 
@@ -27,13 +27,15 @@ class DocCompiler(val files:List[File]) {
   }
       
 }
-object util {
+object Util {
 	/** Given a directory recursivelly returns the list of files ending with `.scala`. 
 	 *  Directories named `.git` or `.svn` are ignored. */
 	def scalaFiles(directory:Directory) = 
 	  directory.walkFilter( x => x.name != ".git" && x.name != ".svn")
 	  .filter(f => f.isFile && f.name.endsWith(".scala")) map(_.toFile) toList
-	  
+	
+	def scalaFiles(dir:String):List[File] = scalaFiles(Path(dir).toDirectory)  
+	
 	def docUniverse(files:List[File]) = new DocCompiler(files).docUniverse 
 }
 object Run {

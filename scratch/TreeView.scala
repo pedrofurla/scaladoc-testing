@@ -1,8 +1,9 @@
 import scala.tools.nsc.doc._
+import scala.tools.nsc.doc.model._
 
 object TreeView {
 
-	def packView(packages:List[model.Package], tab:Int = 0):Unit = 
+	def packView(packages:List[Package], tab:Int = 0):Unit = 
 		for(pack <- packages sortBy(_.name)) {
 			println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
 			templateView(pack, pack.templates, tab+2)
@@ -15,7 +16,7 @@ object TreeView {
 			typeView(pack, pack.aliasTypes, tab+2)
 		}
 	
-	def templateView(owner:model.DocTemplateEntity, templates:List[model.DocTemplateEntity], tab:Int = 0):Unit = 	
+	def templateView(owner:DocTemplateEntity, templates:List[DocTemplateEntity], tab:Int = 0):Unit = 	
 		for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
 			println((" " * tab) + nature2string(t) + " " + t.name);
 			
@@ -27,33 +28,80 @@ object TreeView {
 		}
 	
 			
-	def nonTemplateView(owner:model.DocTemplateEntity, nonTemplates:List[model.NonTemplateMemberEntity], tab:Int) = {
+	def nonTemplateView(owner:DocTemplateEntity, nonTemplates:List[NonTemplateMemberEntity], tab:Int) = {
 		val filtered = nonTemplates.filter( _.inDefinitionTemplates.head == owner )
 		if(!filtered.isEmpty) println(" " * tab)
 		for(member <- filtered) 
 			println(" " * tab+nature2string(member) + " " +member.name+", ")		
 	}
 			
-	def typeView(owner:model.DocTemplateEntity, types:List[model.NonTemplateMemberEntity], tab:Int = 0) = 
+	def typeView(owner:DocTemplateEntity, types:List[NonTemplateMemberEntity], tab:Int = 0) = 
 		for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner)     	  
 			println((" " * tab) +  " type " + t.name)
 		
 	
-	def nature2string(e : model.Entity) = 
+	def nature2string(e : Entity) = 
 		e match {
-			case t : model.TemplateEntity if(t.isTrait) => "trait "
-			case t : model.TemplateEntity if(t.isObject) => "object "
-			case t : model.TemplateEntity if(t.isPackage) => "package "
-			case t : model.TemplateEntity if(t.isClass) => "class " 
-			case e : model.MemberEntity if(e.isDef) => "def "
-			case e : model.MemberEntity if(e.isVal) => "val "
-			case e : model.MemberEntity if(e.isLazyVal) => "lazy val "
-			case e : model.MemberEntity if(e.isVar) => "var "
-			case e : model.MemberEntity if(e.isAliasType) => "type "
-			case a : model.AbstractType => "type "
+			case t : TemplateEntity if(t.isTrait) => "trait "
+			case t : TemplateEntity if(t.isObject) => "object "
+			case t : TemplateEntity if(t.isPackage) => "package "
+			case t : TemplateEntity if(t.isClass) => "class " 
+			case e : MemberEntity if(e.isDef) => "def "
+			case e : MemberEntity if(e.isVal) => "val "
+			case e : MemberEntity if(e.isLazyVal) => "lazy val "
+			case e : MemberEntity if(e.isVar) => "var "
+			case e : MemberEntity if(e.isAliasType) => "type "
+			case a : AbstractType => "type "
 			case u @ _ =>  
 				println("unknown "+ u+ " " +u.getClass); ""			
 		}
 
+	val tab = "\t" * 3
+	def indent(s:String) = tab +  s replaceAll("\n","\n"+tab)
 	
+	def isContainer(tpl:TemplateEntity) = tpl.isInstanceOf[TemplateEntity]
+	
+	def isLocalDefinition(m:MemberEntity, owner:DocTemplateEntity) = m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner 
+	
+	implicit def pimpedMember(m:MemberEntity) = new {
+		def isDefinedAt(owner:TemplateEntity) = m.inDefinitionTemplates.isEmpty || m.inDefinitionTemplates.head == owner 
+	}
+	
+	def gather2(owner:DocTemplateEntity):String = {
+		val locals = owner.members filter { _ isDefinedAt owner } 
+		val containers = locals collect { case tpl:DocTemplateEntity => tpl }
+		val nonContainers = locals filter { x => x.isAliasType || x.isAbstractType };
+		//println("locals :"+locals.size)
+		//println("containers:"+containers.size)
+		//val tmp = (containers.map { c => gather2(c) } mkString("","",""))
+		//println(tmp replaceAll("\n","@\n"))
+		" * " + ( if(owner.isPackage) owner.qualifiedName +" * "+owner.inDefinitionTemplates.head.qualifiedName else owner.name+" * "+owner.inDefinitionTemplates.head.qualifiedName )+ "\n" +		
+		( if (containers.size>0) indent(
+		//(nonContainers map {" - " + _.qualifiedName } mkString("","\n","")) +
+			(containers.map { c => gather2(c) } mkString("","",""))
+		) else "" )
+	}
+	
+	def gather(owner:DocTemplateEntity):String = {
+		(for(m <- owner.members if m isDefinedAt owner) yield { 
+			m.name +"\n"+ 
+				(m match {
+					case tpl:DocTemplateEntity => indent(gather(tpl))	         
+					case _ => "" 
+				})
+		}) mkString("","","")
+	}
+	
+	def gatherHtml(owner:DocTemplateEntity):String = {
+		(for(m <- owner.members if m isDefinedAt owner) yield { 
+			m.name +"\n"+ 
+				(m match {
+					case tpl:DocTemplateEntity => indent(gather(tpl))	         
+					case _ => "" 
+				})
+		}) mkString("","","")
+	}
+          
+            
+      
 }
