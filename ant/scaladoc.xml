@@ -22,13 +22,32 @@
 		</scaladoc>
 	</target>
 	<target name="scaladoc-library" >
-		<scaladoc srcdir="${SCALA_SRC}/src/" 
+		<scaladoc 
     		destdir="${TMP}/doc-library"
-    		classpathref="scala.classpath">
-			<include name="library/**/*.scala"/>
-			<exclude name="scala\tools\nsc\doc\html\resource\lib\**"/>
-			<exclude name="**/*.xml"/>
-			<exclude name="**/*.tmpl"/>
+      		doctitle="Scala Standard Library"
+    		classpathref="scala.classpath"
+    		docsourceurl="https://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src/€{FILE_PATH}.scala#L1"
+      		sourcepath="${SCALA_SRC}">
+    		<src>
+				<files includes="${SCALA_SRC}/src/actors"/>
+				<files includes="${SCALA_SRC}/src/library/scala"/>
+				<files includes="${SCALA_SRC}/src/swing"/>
+				<files includes="${SCALA_SRC}/src/continuations/library"/>
+			</src>
+      		<include name="**/*.scala"/>
+      		  <exclude name="reflect/Code.scala"/>
+		      <exclude name="reflect/Manifest.scala"/>
+		      <exclude name="reflect/Print.scala"/>
+		      <exclude name="reflect/Symbol.scala"/>
+		      <exclude name="reflect/Tree.scala"/>
+		      <exclude name="reflect/Type.scala"/>
+		      <exclude name="reflect/TypedCode.scala"/>
+		      <exclude name="runtime/*Array.scala"/>
+		      <exclude name="runtime/*$.scala"/>
+		      <exclude name="runtime/ScalaRunTime.scala"/>
+		      <exclude name="runtime/StreamCons.scala"/>
+		      <exclude name="runtime/StringAdd.scala"/>
+		      <exclude name="scala/swing/test/**"/>				
 		</scaladoc>
 	</target>
 	<target name="scaladoc-dbc" >
