@@ -1,5 +1,0 @@
-<antlib>
-    
-    <taskdef name="scalaIndex"
-               classname="scala.tools.ant.ScalaIndexTask"/>
-</antlib>
