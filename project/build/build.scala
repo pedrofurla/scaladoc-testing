@@ -1,6 +1,6 @@
 import sbt._
 
-class Build(info: ProjectInfo) extends ParentProject(info) {  
+class Build(info: ProjectInfo) extends DefaultProject(info) {  
   
   lazy val main = project(".","index", new ScalaIndexProject(_))
   lazy val plugin = project(".", "index-sbt", new IndexPluginProject(_))
