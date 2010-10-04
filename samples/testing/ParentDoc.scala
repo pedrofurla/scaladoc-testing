@@ -7,6 +7,7 @@ import scala.collection.mutable.ArrayStack
  * Testing a abstract class with ''type parameters''
  *  - With some ''type parameters''
  *  - With some ''type aliases''
+ * 
  * @author Pedro
  *
  */

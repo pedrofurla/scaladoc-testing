@@ -22,6 +22,8 @@ package testing
 *   - T2.2
 *  - T3
 * 
+* `Back-tick`
+* 
 * Naming a link: [[http://www.google.com some where]]
 * 
 * No names: [[http://www.google.com]]-ing
@@ -34,7 +36,7 @@ package testing
 * @version 2.8
 * @since   1.0
 * @author Pedro
-* @author ''fulano''
+*   @author ''fulano''
 * @see This should emit a warning [[testing.ParentDoc the parent]]
 * @see [[testing.TestDoc]]
 */
