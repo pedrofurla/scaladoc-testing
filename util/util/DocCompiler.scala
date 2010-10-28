@@ -5,34 +5,36 @@ import scala.tools.nsc.Global
 import scala.tools.nsc.doc
 import scala.tools.nsc.doc.model.comment._
 
-class DocCompiler(val files:List[File]) {
-  import scala.tools.nsc.reporters.{Reporter, ConsoleReporter}
+object DocCompiler {
   import scala.tools.nsc.util.FakePos
   import scala.tools.nsc._
-  
-  var reporter: ConsoleReporter = _
-  
+  import scala.tools.nsc.reporters.{ConsoleReporter}
+                                                           
   def error(msg: String): Unit = {
     reporter.error(FakePos("scalac"), msg + "\n  scalac -help  gives more information")
   }
-  
+
   val docSettings: doc.Settings = new doc.Settings(error)
-    
-  val command = new CompilerCommand(files map {_.path}, docSettings)
-  
-  reporter = new ConsoleReporter(docSettings) {
-	override def hasErrors = false // need to do this so that the Global instance doesn't trash all the symbols just because there was an error
+
+  val reporter: ConsoleReporter = new ConsoleReporter(docSettings) {
+    override def hasErrors = false // need to do this so that the Global instance doesn't trash all the symbols just because there was an error
   }
-    
-  def docUniverse = {
-	  val docProcessor = new doc.DocFactory(reporter, docSettings)
-	  docProcessor.universe(command.files).get
+
+
+  lazy val docFactory = new doc.DocFactory(reporter, docSettings)
+
+  def document(files:List[File]) = {
+    docFactory.document(files map { _.path })
   }
-      
+
+  def universe(files:List[File]) = {
+    val command = new CompilerCommand(files map {_.path}, docSettings)
+    docFactory.universe(command.files).get
+  }
+
 }
 
-class ModelFactoryMock(val g: Global, val s: doc.Settings)
-  extends doc.model.ModelFactory(g, s) {
+class ModelFactoryMock(val g: Global, val s: doc.Settings) extends doc.model.ModelFactory(g, s) {
   thisFactory: ModelFactoryMock with CommentFactory with doc.model.TreeFactory =>
 
   def strip(c: Comment): Option[Inline] = {
@@ -55,19 +57,20 @@ object Util {
 	  .filter(f => f.isFile && f.name.endsWith(".scala")) map(_.toFile) toList
 	
 	def scalaFiles(dir:String):List[File] = scalaFiles(Path(dir).toDirectory)  
-	
-	def docUniverse(files:List[File]) = new DocCompiler(files).docUniverse
-	
-	def scriptRun(args:String*) = MainGenericRunner.main(args.toArray[String])
-	
-	lazy val modelFactory = {
-	import scala.tools.nsc.doc.model._
+
+  def docUniverse(files:List[File]) = DocCompiler.universe(files)
+
+  def document(files:List[File]) = DocCompiler.document(files)
+  
+  lazy val modelFactory = {
     val settings = new doc.Settings((str: String) => {})
     val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
     val g = new Global(settings, reporter)
     (new ModelFactoryMock(g, settings) with CommentFactory with doc.model.TreeFactory)
   }
-	
+
+	def scriptRun(args:String*) = MainGenericRunner.main(args.toArray[String])
+
 	def runTests(testRoot:String) { // not working, it's using scala.home classpath
 		System.setProperty("scala.home","C:/dev/langs/scala/scala-2.8.0")
 		scalaFiles(testRoot).foreach { f =>
