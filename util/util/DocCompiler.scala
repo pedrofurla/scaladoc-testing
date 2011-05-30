@@ -1,21 +1,32 @@
 package util
 
 import scala.tools.nsc.io._
+import scala.tools.nsc.Global
+import scala.tools.nsc.doc
 import scala.tools.nsc.doc.model.comment._
 import tools.nsc.{CompilerCommand, Global, doc}
 
 class DocCompiler(val files:List[File]) {
   import scala.tools.nsc.reporters.{Reporter, ConsoleReporter}
+
   import scala.tools.nsc.util.FakePos
   import scala.tools.nsc._
   
   var reporter: ConsoleReporter = _
   
+
+
   def error(msg: String): Unit = {
     reporter.error(FakePos("scalac"), msg + "\n  scalac -help  gives more information")
   }
   
+
   val docSettings: doc.Settings = new doc.Settings(error)
+    
+  val command = new CompilerCommand(files map {_.path}, docSettings)
+  
+  reporter = new ConsoleReporter(docSettings) {
+	override def hasErrors = false // need to do this so that the Global instance doesn't trash all the symbols just because there was an error
     
   val command = new CompilerCommand(files map {_.path}, docSettings)
   
@@ -25,8 +36,13 @@ class DocCompiler(val files:List[File]) {
     
   def docUniverse = {
 	  val docProcessor = new doc.DocFactory(reporter, docSettings)
+	  docProcessor.universe(command.files).get
+    
+  def docUniverse = {
+	  val docProcessor = new doc.DocFactory(reporter, docSettings)
 	  docProcessor.makeUniverse(command.files).get
   }
+      
 
   def document = {
     val docProcessor = new doc.DocFactory(reporter, docSettings)
@@ -37,6 +53,7 @@ class DocCompiler(val files:List[File]) {
 
 class ModelFactoryMock(val g: Global, val s: doc.Settings)
   extends doc.model.ModelFactory(g, s) {
+
   thisFactory: ModelFactoryMock with CommentFactory with doc.model.TreeFactory =>
 
   def strip(c: Comment): Option[Inline] = {
@@ -52,6 +69,7 @@ class ModelFactoryMock(val g: Global, val s: doc.Settings)
 }
 
 object Util {
+	/** Given a directory recursivelly returns the list of files ending with `.scala`. 
 	/** Given a directory recursively returns the list of files ending with `.scala`. 
 	 *  Directories named `.git` or `.svn` are ignored. */
 	def scalaFiles(directory:Directory) = 
@@ -59,6 +77,13 @@ object Util {
 	  .filter(f => f.isFile && f.name.endsWith(".scala")) map(_.toFile) toList
 	
 	def scalaFiles(dir:String):List[File] = scalaFiles(Path(dir).toDirectory)  
+	
+	def docUniverse(files:List[File]) = new DocCompiler(files).docUniverse
+	
+	def scriptRun(args:String*) = MainGenericRunner.main(args.toArray[String])
+	
+	lazy val modelFactory = {
+	import scala.tools.nsc.doc.model._
 	
 	def docUniverse(files:List[File]) = new DocCompiler(files).docUniverse
 
@@ -80,12 +105,16 @@ object Util {
     (new ModelFactoryMock(g, settings) with CommentFactory with doc.model.TreeFactory)
   }
 	
+
+
+
 	def runTests(testRoot:String) { // not working, it's using scala.home classpath
 		System.setProperty("scala.home","C:/dev/langs/scala/scala-2.8.0")
 		scalaFiles(testRoot).foreach { f =>
 			try {
 				val file = f.toAbsolute.toString
 				println("Running "+file) // "-howtorun:object"
+				scriptRun("-nocompdaemon","-i",file,"-e","Test.main(Array.empty)")
 				//scriptRun("-nocompdaemon","-i",file,"-e","Test.main(Array.empty)")
 			} catch {
 				case x : Error => println(x)
