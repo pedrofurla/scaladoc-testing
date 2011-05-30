@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="Scala Variables" basedir=".">    
-    <property name="SCALA_SRC" value="C:/dev/langs/scala/scala-svn/scala-auth"/>
+    <property name="SCALA_SRC" value="C:/dev/langs/scala/scala-svn/scala-auth"/>	
 	<property name="PROJECT_LOC" value="C:/dev/langs/scala/projects/scala-doc-prj-svn"/>
     <property name="TMP" value="${PROJECT_LOC}/../tmp/scaladoc2"/>
-    	
-    <property name="scala.home" value="C:/dev/langs/scala/scala-2.8.0"/>
+    
+	<property name="scala.home" value="${SCALA_SRC}/build/pack"/> 
+	<!--  <property name="scala.home" value="C:/dev/langs/scala/scala-2.8.0"/> -->
     <echo>
         scala.home: ${scala.home}
         SCALA_SRC: ${SCALA_SRC}
@@ -13,11 +14,23 @@
         tmp: ${TMP}
     </echo>
     <path id="scala.classpath">
-      <pathelement path="${PROJECT_LOC}/bin"/>
+      <pathelement path="${PROJECT_LOC}/bin"/> 
       <pathelement path="${PROJECT_LOC}/../scaladoc-testing/bin"/>    	
       <pathelement location="${scala.home}/lib/scala-library.jar"/>
-      <pathelement location="${scala.home}/lib/scala-compiler.jar"/>      
+      <pathelement location="${scala.home}/lib/scala-compiler.jar"/>
+      <pathelement location="${scala.home}/lib/scala-swing.jar"/>
+      <pathelement location="${scala.home}/lib/scalap.jar"/>    
+      <pathelement location="${scala.home}/lib/scala-partest.jar"/>
+      <pathelement location="${SCALA_SRC}/lib/ant/ant.jar"/>
+      <pathelement location="${SCALA_SRC}/lib/jline.jar"/>
     </path>
     
-    <taskdef resource="scala/tools/ant/antlib.xml" classpathref="scala.classpath"/>
+	<taskdef resource="scala/tools/ant/antlib.xml" classpathref="scala.classpath"/>
+	
+<!--	<scalac classpathref="scala.classpath"  
+			destdir="${PROJECT_LOC}/bin-ant"  srcdir="${PROJECT_LOC}/src">
+		<include name="**/*.scala" />
+	</scalac>
+-->
+   
 </project>

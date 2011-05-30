@@ -1,9 +1,8 @@
 package util
 
 import scala.tools.nsc.io._
-import scala.tools.nsc.Global
-import scala.tools.nsc.doc
 import scala.tools.nsc.doc.model.comment._
+import tools.nsc.{CompilerCommand, Global, doc}
 
 class DocCompiler(val files:List[File]) {
   import scala.tools.nsc.reporters.{Reporter, ConsoleReporter}
@@ -21,12 +20,17 @@ class DocCompiler(val files:List[File]) {
   val command = new CompilerCommand(files map {_.path}, docSettings)
   
   reporter = new ConsoleReporter(docSettings) {
-	override def hasErrors = false // need to do this so that the Global instance doesn't trash all the symbols just because there was an error
+	  override def hasErrors = false // need to do this so that the Global instance doesn't trash all the symbols just because there was an error
   }
     
   def docUniverse = {
 	  val docProcessor = new doc.DocFactory(reporter, docSettings)
-	  docProcessor.universe(command.files).get
+	  docProcessor.makeUniverse(command.files).get
+  }
+
+  def document = {
+    val docProcessor = new doc.DocFactory(reporter, docSettings)
+	  docProcessor.document(command.files)
   }
       
 }
@@ -48,7 +52,7 @@ class ModelFactoryMock(val g: Global, val s: doc.Settings)
 }
 
 object Util {
-	/** Given a directory recursivelly returns the list of files ending with `.scala`. 
+	/** Given a directory recursively returns the list of files ending with `.scala`. 
 	 *  Directories named `.git` or `.svn` are ignored. */
 	def scalaFiles(directory:Directory) = 
 	  directory.walkFilter( x => x.name != ".git" && x.name != ".svn")
@@ -57,8 +61,16 @@ object Util {
 	def scalaFiles(dir:String):List[File] = scalaFiles(Path(dir).toDirectory)  
 	
 	def docUniverse(files:List[File]) = new DocCompiler(files).docUniverse
+
+  def document(files:List[File]) = {
+    val docCompiler = new DocCompiler(files) {
+      override val command = new CompilerCommand(
+        "-d" :: """C:\dev\langs\scala\projects\tmp\scaladoc2\doc-testing""" :: (files.map {_.path}), docSettings)
+    }
+    docCompiler.document
+  }
 	
-	def scriptRun(args:String*) = MainGenericRunner.main(args.toArray[String])
+	//def scriptRun(args:String*) = MainGenericRunner.main(args.toArray[String])
 	
 	lazy val modelFactory = {
 	import scala.tools.nsc.doc.model._
@@ -74,7 +86,7 @@ object Util {
 			try {
 				val file = f.toAbsolute.toString
 				println("Running "+file) // "-howtorun:object"
-				scriptRun("-nocompdaemon","-i",file,"-e","Test.main(Array.empty)")
+				//scriptRun("-nocompdaemon","-i",file,"-e","Test.main(Array.empty)")
 			} catch {
 				case x : Error => println(x)
 			}
