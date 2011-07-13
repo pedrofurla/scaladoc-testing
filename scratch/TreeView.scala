@@ -5,7 +5,7 @@ object TreeView {
 
 	def packView(packages:List[Package], tab:Int = 0):Unit = 
 		for(pack <- packages sortBy(_.name)) {
-			println((" " * tab) + nature2string(pack) + " " + pack.qualifiedName)
+			println((" " * tab) + util.nature2string(pack) + " " + pack.qualifiedName)
 			templateView(pack, pack.templates, tab+2)
 			packView(pack.packages,tab+2)
 			
@@ -18,7 +18,7 @@ object TreeView {
 	
 	def templateView(owner:DocTemplateEntity, templates:List[DocTemplateEntity], tab:Int = 0):Unit = 	
 		for(t <- templates sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner) {
-			println((" " * tab) + nature2string(t) + " " + t.name);
+			println((" " * tab) + util.nature2string(t) + " " + t.name);
 			
 			typeView(t, t.aliasTypes, tab+2)
 			typeView(t, t.abstractTypes, tab+2)
@@ -32,29 +32,14 @@ object TreeView {
 		val filtered = nonTemplates.filter( _.inDefinitionTemplates.head == owner )
 		if(!filtered.isEmpty) println(" " * tab)
 		for(member <- filtered) 
-			println(" " * tab+nature2string(member) + " " +member.name+", ")		
+			println(" " * tab+util.nature2string(member) + " " +member.name+", ")
 	}
 			
 	def typeView(owner:DocTemplateEntity, types:List[NonTemplateMemberEntity], tab:Int = 0) = 
 		for(t <- types sortBy(_.name) if t.inDefinitionTemplates.isEmpty || t.inDefinitionTemplates.head == owner)     	  
 			println((" " * tab) +  " type " + t.name)
-		
-	
-	def nature2string(e : Entity) = 
-		e match {
-			case t : TemplateEntity if(t.isTrait) => "trait "
-			case t : TemplateEntity if(t.isObject) => "object "
-			case t : TemplateEntity if(t.isPackage) => "package "
-			case t : TemplateEntity if(t.isClass) => "class " 
-			case e : MemberEntity if(e.isDef) => "def "
-			case e : MemberEntity if(e.isVal) => "val "
-			case e : MemberEntity if(e.isLazyVal) => "lazy val "
-			case e : MemberEntity if(e.isVar) => "var "
-			case e : MemberEntity if(e.isAliasType) => "type "
-			case a : AbstractType => "type "
-			case u @ _ =>  
-				println("unknown "+ u+ " " +u.getClass); ""			
-		}
+
+
 
 	val tab = "\t" * 3
 	def indent(s:String) = tab +  s replaceAll("\n","\n"+tab)
